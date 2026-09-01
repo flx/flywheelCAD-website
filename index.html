@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlywheelCAD — Python-first parametric CAD for macOS</title>
+<meta name="description" content="FlywheelCAD is a Python-first, constraint-driven CAD app for Apple silicon Macs. Sketch in the UI, backed by a live Python script that stays the source of truth. Fully local — no account, no cloud.">
+<link rel="canonical" href="https://flywheelcad.com/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FlywheelCAD">
+<meta property="og:url" content="https://flywheelcad.com/">
+<meta property="og:title" content="FlywheelCAD — Python-first parametric CAD for macOS">
+<meta property="og:description" content="Sketch in the UI, backed by a live Python script that stays the source of truth. Constraints, bodies, components, assemblies. Fully local — no account, no cloud.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FlywheelCAD — Python-first parametric CAD for macOS">
+<meta name="twitter:description" content="Sketch in the UI, backed by a live Python script that stays the source of truth. Fully local — no account, no cloud.">
+
+<style>
+:root{
+  --bg:#fbfaf8; --panel:#ffffff; --ink:#16181d; --muted:#5d636e;
+  --line:#e4e2dd; --accent:#1f5f4f; --accent-ink:#ffffff; --code:#f2f0ec;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1013; --panel:#161a1f; --ink:#e9eaec; --muted:#9aa1ab;
+    --line:#272c33; --accent:#5fd6b4; --accent-ink:#08110e; --code:#1b2027;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1013; --panel:#161a1f; --ink:#e9eaec; --muted:#9aa1ab;
+  --line:#272c33; --accent:#5fd6b4; --accent-ink:#08110e; --code:#1b2027;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.6 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column; min-height:100vh;
+}
+.wrap{width:100%; max-width:720px; margin:0 auto; padding:0 24px}
+header{padding:56px 0 0}
+.brand{display:flex; align-items:center; gap:12px; font-weight:650; letter-spacing:-.01em; font-size:17px}
+.mark{width:26px; height:26px; flex:none; color:var(--accent)}
+main{flex:1; padding:48px 0 72px}
+h1{
+  font-size:clamp(30px,5.4vw,44px); line-height:1.12; letter-spacing:-.025em;
+  margin:0 0 18px; font-weight:660; max-width:16ch;
+}
+.lede{font-size:clamp(17px,2.2vw,19px); color:var(--muted); margin:0 0 12px; max-width:56ch}
+.lede strong{color:var(--ink); font-weight:600}
+.cta{display:flex; flex-wrap:wrap; gap:12px; margin:32px 0 14px}
+.btn{
+  display:inline-block; padding:11px 20px; border-radius:9px; text-decoration:none;
+  font-weight:560; font-size:15px; border:1px solid transparent; transition:opacity .15s ease;
+}
+.btn:hover{opacity:.85}
+.btn-primary{background:var(--accent); color:var(--accent-ink)}
+.btn-soft{background:var(--panel); color:var(--ink); border-color:var(--line)}
+.req{font-size:13.5px; color:var(--muted); margin:0}
+.panel{
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  padding:22px 24px; margin:44px 0 0;
+}
+.panel h2{font-size:15px; margin:0 0 14px; letter-spacing:-.01em; font-weight:620}
+.panel ul{margin:0; padding-left:20px; color:var(--muted)}
+.panel li{margin:0 0 7px}
+.panel li:last-child{margin-bottom:0}
+.panel strong{color:var(--ink); font-weight:560}
+pre{
+  background:var(--code); border:1px solid var(--line); border-radius:10px;
+  padding:16px 18px; overflow-x:auto; margin:28px 0 0;
+  font:13.5px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+pre code{color:var(--ink)}
+a{color:var(--accent)}
+footer{border-top:1px solid var(--line); padding:22px 0 40px; font-size:13.5px; color:var(--muted)}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Python-first, constraint-driven CAD.</h1>
+
+    <p class="lede">
+      Sketch directly in the UI, backed by a live <strong>Python</strong> script.
+      Constrain geometry, build bodies with extrude, revolve, loft and booleans,
+      compose reusable components into mated assemblies, and export for 3D printing.
+      The script stays the source of truth.
+    </p>
+    <p class="lede">
+      Runs entirely on your machine — <strong>no account, no cloud, nothing leaves your Mac</strong>.
+    </p>
+
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/flx/flywheelcad-releases/releases/latest">Download the beta</a>
+      <a class="btn btn-soft" href="https://digitalhandstand.com/flywheelcad/">Documentation &amp; examples</a>
+    </div>
+    <p class="req">Requires macOS 15.6 or later on Apple silicon.</p>
+
+    <pre><code>from flywheelcad import *
+cad = FlywheelCAD()
+
+cad.with_sketch("xy")
+p1 = cad.point2d(-60, -12.5)
+p2 = cad.point2d(-20, -12.5)
+line = cad.line2d(p1, p2)
+cad.horizontal(line)
+cad.length(line, 40)</code></pre>
+
+    <div class="panel">
+      <h2>What it does</h2>
+      <ul>
+        <li><strong>Sketch and constrain</strong> — points, lines, arcs, splines, with geometric constraints, dimensions and shared variables.</li>
+        <li><strong>Build bodies</strong> — extrude, revolve, multi-section loft, booleans with blended seams, edge rounding, draft and twist.</li>
+        <li><strong>Compose assemblies</strong> — define a part once, instance it, mate instances onto named anchor points.</li>
+        <li><strong>Standard parts library</strong> — NEMA steppers, hobby servos, metric fasteners, bearings, T-slot extrusion.</li>
+        <li><strong>Export for printing</strong> — 3MF, STL and OBJ, with per-body colours and finishes.</li>
+        <li><strong>Bring your own AI</strong> — every document is ordinary Python, so any coding agent can write and refactor your models.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.
+  </div>
+</footer>
+
+</body>
+</html>
