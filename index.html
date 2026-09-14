@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FlywheelCAD — Python-first parametric CAD for macOS</title>
-<meta name="description" content="FlywheelCAD is a Python-first, constraint-driven CAD app for Apple silicon Macs. Sketch in the UI, backed by a live Python script that stays the source of truth. Fully local — no account, no cloud.">
+<title>FlywheelCAD — parametric CAD for macOS where every model is a Python file</title>
+<meta name="description" content="FlywheelCAD is a native macOS parametric CAD app for makers who like code. Sketch in the GUI, edit in Python, hand it to an AI agent, pick it up in the GUI again — it's the same file. No cloud, no account.">
 <link rel="canonical" href="https://flywheelcad.com/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FlywheelCAD">
 <meta property="og:url" content="https://flywheelcad.com/">
-<meta property="og:title" content="FlywheelCAD — Python-first parametric CAD for macOS">
-<meta property="og:description" content="Sketch in the UI, backed by a live Python script that stays the source of truth. Constraints, bodies, components, assemblies. Fully local — no account, no cloud.">
+<meta property="og:title" content="FlywheelCAD — Sketch in the GUI. Edit in Python. Hand it to an agent.">
+<meta property="og:description" content="Native macOS parametric CAD where every model is a Python file. Real constraint sketcher, mates, standard parts. No cloud, no account, your design is yours.">
+<meta property="og:image" content="https://flywheelcad.com/video/flywheelcad-hero-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FlywheelCAD — Python-first parametric CAD for macOS">
-<meta name="twitter:description" content="Sketch in the UI, backed by a live Python script that stays the source of truth. Fully local — no account, no cloud.">
+<meta name="twitter:image" content="https://flywheelcad.com/video/flywheelcad-hero-poster.jpg">
+<meta name="twitter:title" content="FlywheelCAD — Sketch in the GUI. Edit in Python. Hand it to an agent.">
+<meta name="twitter:description" content="Native macOS parametric CAD where every model is a Python file. No cloud, no account, your design is yours.">
 
 <style>
 :root{
@@ -46,8 +48,8 @@ header{padding:56px 0 0}
 .mark{width:26px; height:26px; flex:none; color:var(--accent)}
 main{flex:1; padding:48px 0 72px}
 h1{
-  font-size:clamp(30px,5.4vw,44px); line-height:1.12; letter-spacing:-.025em;
-  margin:0 0 18px; font-weight:660; max-width:16ch;
+  font-size:clamp(28px,4.8vw,40px); line-height:1.14; letter-spacing:-.025em;
+  margin:0 0 18px; font-weight:660; max-width:24ch; text-wrap:balance;
 }
 .lede{font-size:clamp(17px,2.2vw,19px); color:var(--muted); margin:0 0 12px; max-width:56ch}
 .lede strong{color:var(--ink); font-weight:600}
@@ -60,6 +62,13 @@ h1{
 .btn-primary{background:var(--accent); color:var(--accent-ink)}
 .btn-soft{background:var(--panel); color:var(--ink); border-color:var(--line)}
 .req{font-size:13.5px; color:var(--muted); margin:0}
+.promise{font-size:15px; color:var(--ink); font-weight:560; margin:10px 0 0; letter-spacing:-.005em}
+.wrap-wide{width:100%; max-width:1040px; margin:0 auto; padding:0 24px}
+.hero-video{
+  display:block; width:100%; height:auto; aspect-ratio:16/9; margin:40px 0 0;
+  border:1px solid var(--line); border-radius:12px; background:var(--panel);
+  box-shadow:0 12px 40px rgba(0,0,0,.08);
+}
 .panel{
   background:var(--panel); border:1px solid var(--line); border-radius:12px;
   padding:22px 24px; margin:44px 0 0;
@@ -96,23 +105,31 @@ footer a{color:var(--muted)}
 
 <main>
   <div class="wrap">
-    <h1>Python-first, constraint-driven CAD.</h1>
+    <h1>Sketch in the GUI. Edit in Python. Hand it to an agent. Pick it up in the GUI again.</h1>
 
     <p class="lede">
-      Sketch directly in the UI, backed by a live <strong>Python</strong> script.
-      Constrain geometry, build bodies with extrude, revolve, loft and booleans,
-      compose reusable components into mated assemblies, and export for 3D printing.
-      The script stays the source of truth.
-    </p>
-    <p class="lede">
-      Runs entirely on your machine — <strong>no account, no cloud, nothing leaves your Mac</strong>.
+      A native macOS parametric CAD app for makers who like code but not at the cost of drawing speed —
+      with a real <strong>constraint sketcher</strong>, mates and standard parts.
     </p>
 
     <div class="cta">
       <a class="btn btn-primary" href="https://github.com/flx/flywheelcad-releases/releases/latest">Download the beta</a>
       <a class="btn btn-soft" href="https://digitalhandstand.com/flywheelcad/">Documentation &amp; examples</a>
     </div>
+    <p class="promise">No cloud. No account. Your design is yours.</p>
     <p class="req">Requires macOS 15.6 or later on Apple silicon.</p>
+  </div>
+
+  <div class="wrap-wide">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+           poster="/video/flywheelcad-hero-poster.jpg" width="1920" height="1080"
+           aria-label="FlywheelCAD demo: sketching a bracket, constraining it, editing the Python, letting an AI agent add screw holes, then adjusting them in the GUI">
+      <source src="/video/flywheelcad-hero.webm" type="video/webm">
+      <source src="/video/flywheelcad-hero.mp4"  type="video/mp4">
+    </video>
+  </div>
+
+  <div class="wrap">
 
     <pre><code>from flywheelcad import *
 cad = FlywheelCAD()
