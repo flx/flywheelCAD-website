@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UI Interactions — FlywheelCAD manual</title>
+<meta name="description" content="How FlywheelCAD's window, 3D view, sketch editor, drawing tools, constraints, dimensions, body tools, menus and exports work in practice.">
+<link rel="canonical" href="https://flywheelcad.com/manual/ui/">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/" aria-current="true">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<!-- chrome:manual-nav -->
+<nav class="fw-mnav" aria-label="Manual">
+  <p class="fw-mnav-title">Manual</p>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/" aria-current="page">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/">Python syntax</a></li>
+    <li><a href="/manual/component-library/">Component library</a></li>
+  </ul>
+  <p class="fw-mnav-extra"><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></p>
+</nav>
+<details class="fw-mdrop">
+  <summary>Manual pages</summary>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/" aria-current="page">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/">Python syntax</a></li>
+    <li><a href="/manual/component-library/">Component library</a></li>
+    <li><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></li>
+  </ul>
+</details>
+<!-- /chrome:manual-nav -->
+<main id="main" class="doc">
+<header class="doc-head">
+<p class="eyebrow">Guide</p>
+        <h1>UI interactions</h1>
+<p class="lede">How the 3D view, sketch tools, constraints, dimensions, and body tools work together.</p>
+        <p>
+          FlywheelCAD is built as a hybrid tool: fast direct manipulation in the UI, backed by a
+          script editor that stays synchronized with the model. This page focuses on how to operate
+          the visible interface efficiently.
+        </p>
+</header>
+<div class="doc-body">
+<section class="section-panel">
+        <h2>Window Layout</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td>Top toolbar</td>
+              <td>
+                A mode pull-down (&ldquo;3D Model&rdquo; or &ldquo;Sketch: &lt;plane&gt;&rdquo;), then a
+                tool cluster that follows the mode: body operations (Combine, Inspect, Transform, Insert,
+                Mate, Section) in 3D; drawing tools, trim, the constraint and dimension dropdowns,
+                construction mode and extrude/revolve in a sketch. Each cluster has a More (&#8943;) menu
+                for the rest, and the Script Editor toggle sits at the trailing edge. The full command
+                set is in the menu bar: File, Edit, Sketch, Draw, Modify, Constrain, Dimension, Body,
+                Component and View.
+              </td>
+            </tr>
+            <tr>
+              <td>Sidebar</td>
+              <td>
+                A filterable list of Bodies, Components and Sketches, each row with an eye toggle for
+                visibility. Show or hide it from the leading toolbar button or the View menu.
+              </td>
+            </tr>
+            <tr>
+              <td>Main canvas</td>
+              <td>
+                Shows either the 3D scene or the active 2D sketch plane. You switch between them as
+                you model. Selecting something shows a read-only Properties card.
+              </td>
+            </tr>
+            <tr>
+              <td>Right panel</td>
+              <td>
+                The live Python script editor. It shows the current model as text and has Run, Stop
+                and Rebuild All controls for replaying the script; imported modules open as read-only
+                tabs. <code>&#8984;F</code> opens a find bar and <code>&#8997;&#8984;F</code> adds a
+                replace row (<em>Edit &rarr; Find</em>).<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Status bar</td>
+              <td>
+                The sketch solver badge, selection info, the perspective/orthographic toggle and the
+                document-wide Mesh quality menu.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section-panel">
+        <h2>3D View</h2>
+        <p>
+          Drag to orbit. A plain scroll <strong>pans</strong>; zoom with <code>&#8997;</code>+scroll or a
+          trackpad pinch. <code>View &rarr; Zoom to Fit</code> (<code>&#8679;&#8984;F</code>) frames the
+          model.
+        </p>
+        <div class="list-grid">
+          <div class="list-panel">
+            <h3>Enter sketch mode</h3>
+            <p>
+              Double-click a sketch plane in the 3D view to edit it. You can also switch to any
+              existing sketch from the toolbar's mode pull-down or the <code>View</code> menu
+              (<code>&#8984;1</code>&ndash;<code>&#8984;9</code>; <code>&#8984;0</code> returns to 3D).
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Select bodies and topology</h3>
+            <p>
+              In 3D mode you can select bodies, areas, and topology points; <code>&#8984;</code>-click
+              adds to the selection, and a long press lists points hidden behind geometry. Those
+              selections feed the <code>Body</code> menu, section/project commands, mates, and custom
+              sketch-plane creation.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Custom sketch planes</h3>
+            <p>
+              Select exactly three 3D points, then use <code>Sketch &rarr; New Sketch from 3 Selected
+              Points&hellip;</code>. The app asks for a plane name and emits a matching
+              <code>create_sketch_plane(...)</code> command into the script.
+              <code>New Sketch from Coordinates&hellip;</code> takes typed points instead, and
+              <code>New Sketch from Selected Area&hellip;</code> starts from a selected face.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Body operations</h3>
+            <p>
+              The <code>Body</code> menu holds extrude/revolve, loft, multi-loft, paths and sweeps,
+              text, the booleans (union, difference, intersect, combine), transform, pattern,
+              offset/shell, section, project, and <code>Inspect / Edit&hellip;</code> for one body's
+              quality, cell size and export flag. It also exports to 3MF, STL, OBJ, GLB and
+              glTF<span class="new">0.35</span>; with nothing selected, every visible body whose export
+              flag is on is written. Document-wide mesh quality lives in <code>View &rarr; Mesh
+              Quality</code> and the status bar. Per-body color and finish are set from
+              <code>Body &rarr; Set Color&hellip;</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>Components, Libraries, and Assemblies</h2>
+        <div class="list-grid">
+          <div class="list-panel">
+            <h3>Insert from Library</h3>
+            <p>
+              <code>Component &rarr; Insert from Library&hellip;</code> opens a movable browser of the
+              installed libraries (the built-in <a href="/manual/component-library/">standard
+              library</a> of motors, servos, bearings, fasteners, gears, electronics, framing and more
+              &mdash; plus any of your own under
+              <code>~/Documents/FlywheelCAD/Libraries/</code>). Pick a part, adjust its parameters
+              with a live 3D preview, and insert. The module is copied into the document&rsquo;s
+              <code>lib/</code> folder and the import + factory + instance lines are appended to the
+              script. <code>Update from Library</code> refreshes vendored parts when their source
+              library changes.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Place and mate instances</h3>
+            <p>
+              <code>Component &rarr; Browse / Place Components&hellip;</code> places instances of the
+              components defined in the document. <code>&#8984;</code>-click an instance anchor and
+              another point in the 3D view, then <code>Component &rarr; Mate Points&hellip;</code> (or the
+              toolbar's Mate button) snaps them together &mdash; the same closed-form mate you can write
+              as <code>cad.mate_coincident(...)</code>. Four points (two anchors of one instance, then
+              two targets) give <code>cad.mate_align(...)</code> or, with the dialog's Axis option,
+              <code>cad.mate_axis(...)</code>.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Author and insert your own</h3>
+            <p>
+              <code>Component &rarr; New Component&hellip;</code> starts a standalone component file, and
+              <code>Make Component from Design&hellip;</code> turns the current document into one;
+              <code>Export Selected Body&hellip;</code> and <code>Export Selected Point as
+              Anchor&hellip;</code> promote a body or point while editing one. To place a loose
+              component <code>.py</code> that isn&rsquo;t in a library, use
+              <code>Insert Component from File&hellip;</code> &mdash; it copies the file in and adds the
+              instance.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Project files</h3>
+            <p>
+              A document is a flat <code>.py</code> or a <code>.fwcad</code> <strong>project
+              bundle</strong> &mdash; a folder that keeps the script and everything it imports together.
+              The <code>File</code> menu converts between them (<code>Convert to Project
+              Bundle&hellip;</code> / <code>Export as Flat Script&hellip;</code>), copies a helper in
+              with <code>Add File to Project&hellip;</code>, reveals a bundle&rsquo;s insides with
+              <code>Show Project Contents</code>, and opens the script in another editor with
+              <code>Open Script in External Editor</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>Sketch Mode</h2>
+        <p>
+          Once you enter a sketch plane, the canvas switches to 2D editing. The toolbar's mode
+          pull-down shows the active sketch (&ldquo;Sketch: xy&rdquo;), and the tool cluster changes
+          from body operations to sketch tools.
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td>Select / pan / zoom</td>
+              <td>
+                Use selection mode to pick geometry or closed areas. Pan and zoom tools are available
+                explicitly in the toolbar, and the select tool also supports drag-based selection and
+                point dragging.
+              </td>
+            </tr>
+            <tr>
+              <td>Draw tools</td>
+              <td>
+                FlywheelCAD provides point, line, circle, arc, ellipse, rectangle, and spline tools,
+                in the toolbar and the <code>Draw</code> menu. Some tools have submodes: circles cycle
+                through center-radius, diameter, and three-point; ellipses cycle through two-foci and
+                three-point; rectangles cycle through corner and center-based creation.
+              </td>
+            </tr>
+            <tr>
+              <td>Construction mode</td>
+              <td>
+                Toggle construction mode when you want guide geometry that remains visible but is
+                dashed and excluded from area detection for body creation.
+              </td>
+            </tr>
+            <tr>
+              <td>Trim, mirror and pattern</td>
+              <td>
+                Trim edits elements in place and can split them into reusable fragments. Mirror works
+                on the selected elements, using the last selected line as the symmetry line.
+                <code>Modify &rarr; Pattern&hellip;</code> repeats the selected points, lines, circles,
+                arcs and ellipses around the point you select last; it writes a loop whose copies stay
+                linked to the source, with the step angle in an editable variable. The
+                <code>Modify</code> menu also holds <code>Fillet Corner&hellip;</code> and
+                <code>Merge Points</code>.
+              </td>
+            </tr>
+            <tr>
+              <td>Sketch export</td>
+              <td>
+                <code>File &rarr; Export Sketch as DXF&hellip;</code> and <code>Export Sketch as
+                SVG&hellip;</code> write one sketch plane, which you pick, as a 2D drawing.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section-panel">
+        <h2>How Drawing Works</h2>
+        <div class="list-grid">
+          <div class="list-panel">
+            <h3>1. Choose a tool</h3>
+            <p>
+              Pick point, line, circle, ellipse, rectangle, spline, arc, or trim from the toolbar.
+              Re-click a multi-mode tool to cycle through its submodes.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>2. Place geometry directly in the sketch</h3>
+            <p>
+              Draw by clicking in the canvas. During creation the app shows preview geometry, then
+              commits the final points and curves to the active sketch plane.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>3. Edit by selection or drag</h3>
+            <p>
+              Click entities to select them. Drag a point in select mode to move it while the solver
+              tries to keep the sketch consistent with existing constraints.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>4. Select areas for bodies</h3>
+            <p>
+              Click inside a closed loop in select mode to select a detected region. Those selected
+              areas become the input to extrude and revolve.
+            </p>
+          </div>
+        </div>
+        <div class="notice">
+          <strong>Selection rules:</strong> click entities for direct selection, drag a box
+          left-to-right for containment selection, and drag right-to-left for crossing selection.
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>Constraints and Dimensions</h2>
+        <div class="list-grid">
+          <div class="list-panel">
+            <h3>Geometric constraints</h3>
+            <p>
+              In select mode, pick the relevant points, lines, circles, ellipses, or splines, then
+              open the toolbar's constraint dropdown or the <code>Constrain</code> menu. Only
+              constraints that fit the current selection are enabled, such as horizontal, parallel,
+              concentric, equal, tangent, point on line, fixed, or symmetry.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Dimensions</h3>
+            <p>
+              Use the toolbar's dimension dropdown or the <code>Dimension</code> menu for point
+              distance, point-line distance, parallel distance, line length, circle radius, and line
+              angle; <code>Smart Dimension (D)</code> picks the kind from the selection. Each
+              dimension can be bound to a constant, an existing variable, or a new variable created
+              on the spot. Dimensions
+              draw in standard CAD style &mdash; extension lines and double-headed arrows parallel
+              to the measured span, leader lines for radii, and arc annotations for angles &mdash;
+              in a distinct teal so they never read as sketch geometry.
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Variables panel</h3>
+            <p>
+              The variables panel (<code>Dimension &rarr; Variables&hellip;</code>) is where you inspect
+              named dimension variables, rename them, set their values or delete them, and keep shared
+              values consistent across multiple dimensions in the same model. Since 0.35 a script can
+              also use these variables for point coordinates and circle sizes; see
+              <a href="/manual/python-syntax/#variables">Python syntax</a>.<span class="new">0.35</span>
+            </p>
+          </div>
+          <div class="list-panel">
+            <h3>Solver feedback</h3>
+            <p>
+              After a constraint or dimension is added, the sketch re-solves asynchronously so the UI
+              stays responsive instead of freezing during convergence work. A status badge reports
+              whether the sketch is under-, fully-, or over-constrained &mdash; including how many
+              degrees of freedom remain &mdash; and, when constraints conflict, names the ones the
+              solver cannot satisfy.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>From Sketches to 3D Bodies</h2>
+        <p>
+          When you have one or more closed selected areas, use the extrude/revolve tool in the
+          toolbar or <code>Body &rarr; Extrude / Revolve&hellip;</code>. The app opens a small panel
+          for operation type, distance, direction, or revolve
+          angle. After the operation completes, return to 3D view to inspect the result and combine
+          it with booleans or other downstream features. Bodies stay tied to the sketch they came
+          from &mdash; edit that geometry and they re-derive &mdash; and selecting a body in the 3D
+          view lets you delete it (<code>Body &rarr; Delete Body</code>, <code>&#8984;&#9003;</code>),
+          which cascades to any boolean or offset bodies built on top of it.
+        </p>
+        <pre><code># Typical sketch-to-body progression
+cad.with_sketch("xy")
+...
+plate_region = cad.region(loop=[la1, la2, la3, la4], holes=[[hole]], inside=(-50, 0))
+plate = cad.extrude("xy", plate_region, 10)</code></pre>
+        <div class="notice">
+          <strong>Useful keys:</strong> <code>Esc</code> cancels the current drawing operation or
+          returns to 3D when idle. <code>L</code>, <code>A</code>, <code>S</code>, <code>C</code>,
+          <code>E</code>, <code>R</code>, and <code>T</code> switch tools; <code>M</code> mirrors and
+          <code>D</code> starts a smart dimension. <code>X</code> toggles construction mode.
+          <code>Enter</code> finishes a spline. <code>&#8984;0</code> shows the 3D model and
+          <code>&#8984;1</code>&ndash;<code>&#8984;9</code> open sketch planes.
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>Example Gallery</h2>
+        <p>
+          These screenshots come from FlywheelCAD's example test scripts (they are not shipped
+          inside the app) and show the kinds of UI outcomes described above: body creation,
+          multi-plane work, and boolean modeling.
+        </p>
+        <div class="list-grid">
+          <div class="list-panel">
+            <a
+              class="lightbox-trigger"
+              href="images/test_extrude_revolve_3d.png"
+              data-lightbox-caption="test_extrude_revolve.py"
+              aria-label="Open larger screenshot for test_extrude_revolve.py"
+            ><img
+              class="example-shot"
+              src="images/test_extrude_revolve_3d.png"
+              alt="FlywheelCAD screenshot from test_extrude_revolve.py showing an extruded plate and a revolved body."
+              loading="lazy"
+            /></a>
+            <h3><code>test_extrude_revolve.py</code></h3>
+            <p>
+              A typical sketch-to-body workflow: closed regions selected in sketch mode, then turned
+              into an extrude and a revolve.
+            </p>
+          </div>
+          <div class="list-panel">
+            <a
+              class="lightbox-trigger"
+              href="images/test_loft_3d.png"
+              data-lightbox-caption="test_loft.py"
+              aria-label="Open larger screenshot for test_loft.py"
+            ><img
+              class="example-shot"
+              src="images/test_loft_3d.png"
+              alt="FlywheelCAD screenshot from test_loft.py showing a loft between planes."
+              loading="lazy"
+            /></a>
+            <h3><code>test_loft.py</code></h3>
+            <p>
+              Shows the handoff from a sketch on one plane to a custom-plane feature and a lofted
+              result in 3D view.
+            </p>
+          </div>
+          <div class="list-panel">
+            <a
+              class="lightbox-trigger"
+              href="images/test_boolean_3d.png"
+              data-lightbox-caption="test_boolean.py"
+              aria-label="Open larger screenshot for test_boolean.py"
+            ><img
+              class="example-shot"
+              src="images/test_boolean_3d.png"
+              alt="FlywheelCAD screenshot from test_boolean.py showing a subtraction example."
+              loading="lazy"
+            /></a>
+            <h3><code>test_boolean.py</code></h3>
+            <p>
+              A straightforward subtractive modeling flow after creating the source bodies from
+              sketches.
+            </p>
+          </div>
+          <div class="list-panel">
+            <a
+              class="lightbox-trigger"
+              href="images/test_boolean_ops_3d.png"
+              data-lightbox-caption="test_boolean_ops.py"
+              aria-label="Open larger screenshot for test_boolean_ops.py"
+            ><img
+              class="example-shot"
+              src="images/test_boolean_ops_3d.png"
+              alt="FlywheelCAD screenshot from test_boolean_ops.py showing overlapping boolean results."
+              loading="lazy"
+            /></a>
+            <h3><code>test_boolean_ops.py</code></h3>
+            <p>
+              Overlapping bodies selected and combined through union, intersection, and subtraction
+              in the Body menu.
+            </p>
+          </div>
+          <div class="list-panel">
+            <a
+              class="lightbox-trigger"
+              href="images/test_gears_3d.png"
+              data-lightbox-caption="test_gears.py"
+              aria-label="Open larger screenshot for test_gears.py"
+            ><img
+              class="example-shot"
+              src="images/test_gears_3d.png"
+              alt="FlywheelCAD screenshot from test_gears.py showing generated gears."
+              loading="lazy"
+            /></a>
+            <h3><code>test_gears.py</code></h3>
+            <p>
+              Imported helper code generating dense sketch geometry that still ends up as normal,
+              inspectable bodies in the same UI.
+            </p>
+          </div>
+        </div>
+      </section>
+</div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

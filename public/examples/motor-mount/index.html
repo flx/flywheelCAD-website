@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motor mount — FlywheelCAD examples</title>
+<meta name="description" content="A FlywheelCAD assembly built from the standard parts library: a NEMA 17 stepper, a servo and horn, a 608 bearing and eight cap screws, each mated onto a named anchor.">
+<link rel="canonical" href="https://flywheelcad.com/examples/motor-mount/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Motor mount — library parts and mates in FlywheelCAD">
+<meta property="og:image" content="https://flywheelcad.com/assets/img/examples/motor-mount.jpg">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/" aria-current="true">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <div class="wrap-wide page-head">
+    <p class="eyebrow"><a href="/examples/">Examples</a></p>
+    <h1>Motor mount</h1>
+    <p class="lede">A plate cut with declared region holes and populated from the standard library: a NEMA&nbsp;17 stepper, a servo with its horn, a 608 bearing and eight cap screws. Every part is mated onto a named anchor. Nothing is placed by typed coordinates.</p>
+  </div>
+
+  <div class="wrap-wide section-tight">
+    <div class="render-pair">
+      <figure>
+        <img class="render" src="/assets/img/examples/motor-mount.jpg" width="1600" height="1200" alt="The motor mount assembly: a metallic plate with a blue NEMA 17 stepper below, an orange servo with a white horn, a bearing in its seat and yellow cap screws.">
+        <figcaption>Stepper, servo and bearing on the plate; eight screws mated in.</figcaption>
+      </figure>
+      <figure>
+        <img class="render" src="/assets/img/examples/motor-mount-under.jpg" width="1600" height="1200" loading="lazy" alt="The motor mount from below: the stepper body and the servo case hang under the plate.">
+        <figcaption>From below: the stepper hangs by its mount face; the servo case drops through its cutout.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section-tight">
+      <h2>What it shows</h2>
+      <ul class="checks">
+        <li>Catalog parts straight from the standard library (<code>stepper</code>, <code>servo</code>, <code>horn</code>, <code>cap_screw</code>, <code>bearing</code>), vendored into the project's <code>lib/standard/</code> so it travels with them.</li>
+        <li>The plate is a component that exports anchors. Each part snaps onto one with <code>cad.mate_coincident</code>. The servo's screws mate onto the servo's own mount holes, so they follow it.</li>
+        <li>Every cutout in the plate is a declared region hole, and the motor and servo hole patterns come from the same library tables the parts are built from. Move <code>MOTOR_AT</code> or <code>SERVO_AT</code> and the holes, the parts and their screws follow.</li>
+      </ul>
+    </section>
+
+    <section class="section-tight">
+      <h2>The code</h2>
+      <pre data-src="Samples/MotorMount.fwcad/main.py:110-135"><code>m = stepper(cad, size=17, length=40)
+motor = cad.instance(m)
+cad.mate_coincident(motor, "mount_face", plate.motor_face)
+cad.set_color(motor, "#5C6BC0", finish="matte")
+
+# Four M3 cap screws, heads on the plate top, into the motor's faceplate taps.
+m3 = cap_screw(cad, thread="M3", length=8)
+for i in range(len(MOTOR_BOLTS)):
+    s = cad.instance(m3)
+    cad.mate_coincident(s, "under_head", getattr(plate, f"motor_bolt_{i}"))
+    cad.set_color(s, "#FFC107", finish="metallic")
+
+# Servo dropped into its cutout, flange seated on the plate top.
+sv = servo(cad, size="standard")
+servo_inst = cad.instance(sv)
+cad.mate_coincident(servo_inst, "mount_0", plate.servo_seat)
+cad.set_color(servo_inst, "#F57C00", finish="matte")
+
+# Four M2.5 screws mated onto the servo's own mount holes, lifted by the
+# flange thickness so the heads sit on the flange top. They follow the servo.
+m25 = cap_screw(cad, thread="M2.5", length=8)
+for i in range(len(SERVO_HOLES)):
+    s = cad.instance(m25)
+    cad.mate_coincident(s, "under_head", getattr(servo_inst, f"mount_{i}"),
+                        offset=(0, 0, SERVO_STD["flange_t"]))
+    cad.set_color(s, "#FFC107", finish="metallic")</code></pre>
+      <p class="code-caption">Catalog parts arrive with named anchors, and placing one is a mate. Excerpt from <code>MotorMount.fwcad/main.py</code>; above it, the plate component declares its holes and exports <code>motor_face</code>, <code>motor_bolt_0..3</code>, <code>servo_seat</code> and <code>bearing_seat</code>.</p>
+    </section>
+
+    <div class="example-links">
+      <a class="btn btn-primary" href="/downloads/FlywheelCAD-Samples.zip">Download the Sample Assemblies (270 KB)</a>
+      <a class="btn btn-soft" href="/manual/#ch7-mates">Manual: mates</a>
+      <a class="btn btn-soft" href="/manual/component-library/">Component library</a>
+    </div>
+    <p class="note">Open <code>MotorMount.fwcad</code> from the Sample Assemblies bundle. The same parts are one click away in the app under <em>Component ▸ Insert from Library…</em>.</p>
+  </div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Component Library — FlywheelCAD manual</title>
+<meta name="description" content="Guide to FlywheelCAD's standard component library: 100+ parametric maker parts (fasteners, bearings, gears, electronics, mounts) you insert, mate and re-use in a design.">
+<link rel="canonical" href="https://flywheelcad.com/manual/component-library/">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+<style>
+      .lib-module { display: grid; grid-template-columns: 320px 1fr; gap: 1.6rem;
+        align-items: start; padding: 1.4rem 0; border-top: 1px solid var(--line); }
+      .lib-module:first-of-type { border-top: 0; }
+      .lib-figure { margin: 0; }
+      .lib-figure img { width: 100%; height: auto; border-radius: 14px;
+        border: 1px solid var(--line); background: #f8f9fb;
+        box-shadow: 0 10px 24px rgba(31,36,44,0.07); }
+      .lib-body h3 { margin: 0 0 0.2rem; display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+      .lib-count { font-size: 0.8rem; font-weight: 500; color: var(--muted);
+        border: 1px solid var(--line); border-radius: 999px; padding: 0.05rem 0.55rem; }
+      .lib-body > p.muted { margin: 0.1rem 0 0.8rem; }
+      .lib-table { width: 100%; }
+      .lib-table th, .lib-table td { vertical-align: top; }
+      .lib-params { color: var(--muted); font-size: 0.86rem; line-height: 1.5; }
+      .lib-params code { font-size: 0.82rem; }
+      .lib-opt { font-style: italic; opacity: 0.7; }
+      @media (max-width: 720px) {
+        .lib-module { grid-template-columns: 1fr; gap: 1rem; }
+        .lib-figure { max-width: 360px; }
+      }
+    </style>
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/" aria-current="true">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<!-- chrome:manual-nav -->
+<nav class="fw-mnav" aria-label="Manual">
+  <p class="fw-mnav-title">Manual</p>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/">Python syntax</a></li>
+    <li><a href="/manual/component-library/" aria-current="page">Component library</a></li>
+  </ul>
+  <p class="fw-mnav-extra"><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></p>
+</nav>
+<details class="fw-mdrop">
+  <summary>Manual pages</summary>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/">Python syntax</a></li>
+    <li><a href="/manual/component-library/" aria-current="page">Component library</a></li>
+    <li><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></li>
+  </ul>
+</details>
+<!-- /chrome:manual-nav -->
+<main id="main" class="doc">
+<header class="doc-head">
+<p class="eyebrow">Reference</p>
+        <h1>Component Library</h1>
+<p class="lede">A standard library of 100+ parametric maker parts &mdash; insert, size, mate and re-use.</p>
+        <p>
+          FlywheelCAD ships a standard library of everyday mechanical and electronic parts &mdash;
+          fasteners, bearings, gears, motors, connectors, board footprints and mounts. Every part is a
+          <strong>parametric component</strong>: pick it from a browser, choose a size, and it drops into
+          your design ready to position and mate. Dimensions trace to a published standard or a common
+          catalog part, so a bolt circle or a bearing bore is the real one.
+        </p>
+        <p class="muted">
+          FlywheelCAD's standard parts are parametric reconstructions from published engineering
+          standards (ISO/DIN/ANSI); dimensions are factual specifications, not data reproduced from
+          any vendor's catalog.
+        </p>
+</header>
+<div class="doc-body">
+<section class="section-panel">
+        <h2>How the library works</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><strong>Insert from a browser</strong></td>
+              <td>
+                <em>Component &rarr; Insert from Library&hellip;</em> opens a searchable browser with a live 3D
+                preview. Enumerated parameters (size, thread, designation&hellip;) appear as <strong>drop-downs</strong>;
+                lengths and diameters are free-entry. Press insert and the part is placed as a component instance.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Copy-on-use</strong></td>
+              <td>
+                Inserting a part <em>vendors</em> its module into your document under <code>lib/standard/</code>,
+                so the document stays self-contained and travels with exactly the parts it uses. In a script the
+                same part is just an import: <code>from lib.standard.bearings import bearing</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Named anchors</strong></td>
+              <td>
+                Each part exposes named reference points &mdash; a stepper's <code>mount_face</code> and
+                <code>bolt_0..3</code>, a bearing's <code>face_a</code>. Mate to them
+                (<code>cad.mate_coincident(part, "face_a", plate.hole_0)</code>) and the part follows when the
+                target moves.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Parametric &amp; memoized</strong></td>
+              <td>
+                Ask for an M3&times;12 and an M4&times;20 and you get two components; ask for a size you already
+                used and it is reused, not rebuilt. Every factory also takes a <code>quality</code> preset
+                (<code>preview</code> / <code>standard</code> / <code>high</code> / <code>ultra</code>) controlling mesh resolution.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="notice">
+          <strong>Scripting a part:</strong> each factory takes <code>cad</code> first, then its parameters, and
+          returns a component you instance. The tables below list every factory and its parameters
+          (drop-down choices are shown inline).
+        </div>
+        <pre><code>from flywheelcad import *
+cad = FlywheelCAD()
+from lib.standard.bearings import bearing
+from lib.standard.fasteners import cap_screw
+
+b = bearing(cad, designation="608")          # a component
+brg = cad.instance(b, translate=(0, 0, 0))   # placed in the assembly
+screw = cad.instance(cap_screw(cad, thread="M3", length=10))</code></pre>
+      </section>
+
+      <section class="section-panel">
+        <h2>Motion &amp; power transmission</h2>
+        <p>Motors, bearings, gears, belts, springs and the linkages that tie them together.</p>
+        
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/steppers.png" alt="steppers library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>steppers</code> <span class="lib-count">1 part</span></h3>
+            <p class="muted">NEMA stepper motors (square &amp; round bodies)</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>stepper</code></td><td>A NEMA stepper motor with catalog-style detailing.</td><td class="lib-params"><code>size</code> 8 &middot; 11 &middot; 14 &middot; 17 &middot; 23 &middot; 34<br><code>length</code> <span class="lib-opt">optional</span><br><code>shaft_length</code> <span class="lib-opt">optional</span><br><code>body</code> square &middot; round</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/servos.png" alt="servos library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>servos</code> <span class="lib-count">2 parts</span></h3>
+            <p class="muted">Hobby servos and matching control horns</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>servo</code></td><td>A hobby servo: case, mounting flange with screw holes, gear-head</td><td class="lib-params"><code>size</code> sub_micro &middot; micro &middot; standard &middot; large</td></tr><tr><td><code>horn</code></td><td>A servo control horn (arm) with linkage holes.</td><td class="lib-params"><code>style</code> single &middot; double &middot; cross &middot; disc<br><code>spline</code> micro &middot; standard &middot; large<br><code>length</code> <span class="lib-opt">optional</span></td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/bearings.png" alt="bearings library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>bearings</code> <span class="lib-count">1 part</span></h3>
+            <p class="muted">Deep-groove ball bearings (ISO 15), plain and flanged</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>bearing</code></td><td>A deep-groove ball bearing (see module docstring for designations).</td><td class="lib-params"><code>designation</code> 623 &middot; 624 &middot; 625 &middot; 626 &middot; 608 &middot; 688 &middot; 6000 &middot; 6001 &middot; 6800 &middot; 6801 &middot; 6900 &middot; 6902<br><code>flanged</code> (False)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/bearings_more.png" alt="bearings_more library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>bearings_more</code> <span class="lib-count">4 parts</span></h3>
+            <p class="muted">Thrust, sleeve, needle and 2-bolt flange bearings</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>thrust_bearing</code></td><td>A single-direction thrust ball bearing: one continuous annular ring</td><td class="lib-params"><code>designation</code> 51100 &middot; 51101 &middot; 51102 &middot; 51103</td></tr><tr><td><code>bushing</code></td><td>A sleeve/sintered-bronze bushing: an annular tube, axis +Z, z=0..length.</td><td class="lib-params"><code>bore</code> (8.0)<br><code>od</code> (10.0)<br><code>length</code> (10.0)<br><code>style</code> plain &middot; flanged</td></tr><tr><td><code>needle_bearing</code></td><td>A drawn-cup needle roller bearing: a thin-wall annular shell, axis</td><td class="lib-params"><code>designation</code> HK0608 &middot; HK0810 &middot; HK1010 &middot; HK1210</td></tr><tr><td><code>flange_bearing</code></td><td>A 2-bolt diamond-flange mounted bearing unit (KFL series): a</td><td class="lib-params"><code>size</code> KFL08 &middot; KFL10</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/motion.png" alt="motion library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>motion</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">LM linear bearings, GT2 pulleys, lead screws and couplings</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>lm_bearing</code></td><td>An LM____UU linear ball bearing: an annular tube with a shallow</td><td class="lib-params"><code>model</code> LM6UU &middot; LM8UU &middot; LM10UU &middot; LM12UU</td></tr><tr><td><code>gt2_pulley</code></td><td>A GT2 (2 mm pitch) timing pulley: two flange disks around a central</td><td class="lib-params"><code>teeth</code> (20)<br><code>bore</code> (5.0)</td></tr><tr><td><code>leadscrew</code></td><td>A trapezoidal lead screw at its nominal major diameter. Axis +Z.</td><td class="lib-params"><code>size</code> TR8x2 &middot; TR8x8 &middot; TR10x2 &middot; TR12x3<br><code>length</code> (200.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>leadscrew_nut</code></td><td>A brass flanged lead-screw nut: a flanged, through-bored cylinder</td><td class="lib-params"><code>size</code> TR8 &middot; TR10 &middot; TR12</td></tr><tr><td><code>shaft_coupling</code></td><td>An aluminium shaft coupling: outer Ø 25, length 30, with a stepped</td><td class="lib-params"><code>style</code> rigid &middot; flexible<br><code>bore_a</code> (5.0)<br><code>bore_b</code> (8.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/transmission.png" alt="transmission library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>transmission</code> <span class="lib-count">6 parts</span></h3>
+            <p class="muted">Roller-chain sprockets, V-belt/idler pulleys, belts, worms</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>sprocket</code></td><td>A roller-chain sprocket: a flat disc (thickness 4) at the chain's</td><td class="lib-params"><code>teeth</code> (16)<br><code>chain</code> #25 &middot; #35 &middot; #40<br><code>bore</code> (8.0)</td></tr><tr><td><code>v_pulley</code></td><td>A V-belt pulley: an annular disc (width 12) with a single-V groove</td><td class="lib-params"><code>od</code> (40.0)<br><code>bore</code> (8.0)</td></tr><tr><td><code>idler_pulley</code></td><td>A smooth belt idler/tensioner wheel: two flange lips (dia od+3)</td><td class="lib-params"><code>od</code> (18.0)<br><code>bore</code> (3.0)</td></tr><tr><td><code>timing_belt</code></td><td>A GT2 timing-belt loop shown as a thin closed racetrack band (teeth</td><td class="lib-params"><code>length</code> (200.0)<br><code>width</code> (6.0)</td></tr><tr><td><code>worm</code></td><td>A worm-drive worm: a plain cylindrical blank (dia od, `length`) with</td><td class="lib-params"><code>length</code> (30.0)<br><code>od</code> (12.0)<br><code>bore</code> (6.0)</td></tr><tr><td><code>belt_clamp</code></td><td>A GT2 belt clamp: the toothed block that grips a timing belt's end and</td><td class="lib-params"><code>belt_width</code> (6.0)<br><code>teeth</code> (6)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/gears.png" alt="gears library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>gears</code> <span class="lib-count">3 parts</span></h3>
+            <p class="muted">Involute spur and helical gears, plus a matching rack</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>spur_gear</code></td><td>An involute spur gear. teeth (>=8), module (mm), thickness (face width),</td><td class="lib-params"><code>teeth</code> (20)<br><code>module</code> (2.0)<br><code>thickness</code> (6.0)<br><code>bore</code> (5.0)<br><code>pressure_angle</code> 14.5 &middot; 20.0 &middot; 25.0</td></tr><tr><td><code>helical_gear</code></td><td>An involute helical gear: the spur profile swept along a helix via the</td><td class="lib-params"><code>teeth</code> (20)<br><code>module</code> (2.0)<br><code>thickness</code> (8.0)<br><code>bore</code> (5.0)<br><code>helix_angle</code> (20.0)<br><code>hand</code> right &middot; left<br><code>pressure_angle</code> 14.5 &middot; 20.0 &middot; 25.0</td></tr><tr><td><code>gear_rack</code></td><td>A straight involute-equivalent gear rack (the tooth strip a spur gear</td><td class="lib-params"><code>teeth</code> (12)<br><code>module</code> (2.0)<br><code>thickness</code> (8.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/springs.png" alt="springs library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>springs</code> <span class="lib-count">3 parts</span></h3>
+            <p class="muted">Compression, extension and torsion springs</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>compression_spring</code></td><td>A helical compression spring.</td><td class="lib-params"><code>coils</code> (6)<br><code>wire_d</code> (1.5)<br><code>outer_d</code> (12.0)<br><code>free_length</code> (25.0)<br><code>ends</code> (closed)</td></tr><tr><td><code>extension_spring</code></td><td>A helical extension spring: close-wound body coils plus a loop at each</td><td class="lib-params"><code>coils</code> (8)<br><code>wire_d</code> (1.2)<br><code>outer_d</code> (10.0)</td></tr><tr><td><code>torsion_spring</code></td><td>A helical torsion spring: body coils plus two tangential legs.</td><td class="lib-params"><code>coils</code> (5)<br><code>wire_d</code> (1.5)<br><code>outer_d</code> (12.0)<br><code>leg_length</code> (20.0)<br><code>leg_angle</code> (90.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/linear_motion.png" alt="linear_motion library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>linear_motion</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Ball screws, turntable bearings, cam followers, gearmotors</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>ball_screw</code></td><td>A ball screw shaft at its nominal major diameter (thread cosmetic --</td><td class="lib-params"><code>size</code> SFU1204 &middot; SFU1605 &middot; SFU2005<br><code>length</code> (200.0)</td></tr><tr><td><code>turntable_bearing</code></td><td>A lazy-susan / slewing turntable bearing, represented as a short</td><td class="lib-params"><code>size</code> 100mm &middot; 150mm</td></tr><tr><td><code>cam_follower</code></td><td>A cam follower / track roller: a threaded stud (dia `bore`, 12mm</td><td class="lib-params"><code>bore</code> (6.0)<br><code>roller_d</code> (16.0)</td></tr><tr><td><code>encoder_wheel</code></td><td>An optical encoder disc: a thin disc (dia `od`, 1.5mm thick, bored</td><td class="lib-params"><code>slots</code> (20)<br><code>od</code> (40.0)<br><code>bore</code> (5.0)</td></tr><tr><td><code>dc_gearmotor</code></td><td>A small DC gear motor: a gearbox (rectangular for N20, round for</td><td class="lib-params"><code>size</code> N20 &middot; 37D</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/linkage.png" alt="linkage library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>linkage</code> <span class="lib-count">3 parts</span></h3>
+            <p class="muted">RC ball links, clevises and pushrods</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>ball_link</code></td><td>A ball link (rod end): threaded shank into a housing that swivels</td><td class="lib-params"><code>thread</code> M2 &middot; M3</td></tr><tr><td><code>clevis</code></td><td>A clevis (fork) link: threaded shank into a forked end with a</td><td class="lib-params"><code>thread</code> M2 &middot; M3</td></tr><tr><td><code>pushrod</code></td><td>A plain pushrod (threaded ends implied). Runs z = 0 → length.</td><td class="lib-params"><code>diameter</code> (2.0)<br><code>length</code> (80.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/shafting.png" alt="shafting library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>shafting</code> <span class="lib-count">4 parts</span></h3>
+            <p class="muted">Shafts with plain/chamfered ends, shaft collars, keys and thrust washers</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>shaft</code></td><td>A plain round shaft. `end="chamfered"` breaks both ends with a 45 deg</td><td class="lib-params"><code>diameter</code> (8.0)<br><code>length</code> (100.0)<br><code>end</code> plain &middot; chamfered</td></tr><tr><td><code>shaft_collar</code></td><td>A set-screw shaft collar: a ring clamped to a shaft to locate a part</td><td class="lib-params"><code>bore</code> (8.0)<br><code>style</code> solid &middot; split</td></tr><tr><td><code>key</code></td><td>A parallel key blank (DIN 6885 A, square ends), sized from the shaft</td><td class="lib-params"><code>shaft_d</code> (8.0)<br><code>length</code> (20.0)</td></tr><tr><td><code>thrust_washer</code></td><td>A plain thrust/shim washer for a shaft: a flat annulus, bronze-coloured</td><td class="lib-params"><code>bore</code> (8.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+      <section class="section-panel">
+        <h2>Fasteners &amp; hardware</h2>
+        <p>Metric fasteners traceable to ISO / DIN standards, plus the negative bodies that cut their holes.</p>
+        
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/fasteners.png" alt="fasteners library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>fasteners</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Cap screws, hex nuts, washers and clearance/tap hole-cutters</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>cap_screw</code></td><td>A DIN 912 socket head cap screw.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (12.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>hex_nut</code></td><td>An ISO 4032 hex nut. Anchors: bottom (z=0), top. Flats face ±Y.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>washer</code></td><td>An ISO 7089 flat washer. Anchors: bottom (z=0), top.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8</td></tr><tr><td><code>clearance</code></td><td>NEGATIVE body: an ISO 273 medium-fit clearance volume to subtract.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (12.0)<br><code>head_pocket</code> (False)</td></tr><tr><td><code>tap</code></td><td>NEGATIVE body: a tap-drill volume (for threads cut into the part).</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (10.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/fasteners_more.png" alt="fasteners_more library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>fasteners_more</code> <span class="lib-count">6 parts</span></h3>
+            <p class="muted">Countersunk / button / grub screws, heat-set inserts, standoffs, threaded rod</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>countersunk</code></td><td>An ISO 10642 flat (countersunk) socket-head screw.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (12.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>button_head</code></td><td>An ISO 7380 button (dome) head socket screw.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (12.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>grub_screw</code></td><td>An ISO 4026 socket set (grub) screw: a headless threaded cylinder with</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (6.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>heatset_insert</code></td><td>A tapered brass heat-set threaded insert (press-in, for 3D prints).</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5</td></tr><tr><td><code>standoff</code></td><td>A hex brass standoff. Anchors: base (z=0), top (z=length); a male-female</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5<br><code>length</code> (15.0)<br><code>gender</code> female-female &middot; male-female</td></tr><tr><td><code>threaded_rod</code></td><td>Threaded rod / studding at the nominal major diameter. Stands up +Z.</td><td class="lib-params"><code>thread</code> M2 &middot; M2.5 &middot; M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (60.0)<br><code>threads</code> cosmetic &middot; real</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/fasteners_hardware.png" alt="fasteners_hardware library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>fasteners_hardware</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Flange &amp; acorn nuts, rivnuts, shoulder screws, lock washers</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>flange_nut</code></td><td>An ISO 4161 serrated hex flange nut (serrations cosmetic).</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>acorn_nut</code></td><td>A DIN 1587 domed acorn (cap) nut: a blind-bored hex base capped by a</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>rivnut</code></td><td>A blind rivet-nut / threaded insert: a flange disc atop a knurled</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10</td></tr><tr><td><code>shoulder_screw</code></td><td>An ISO 7379 shoulder (stripper) screw: a precision shoulder followed</td><td class="lib-params"><code>shoulder_d</code> 6 &middot; 8 &middot; 10 &middot; 12<br><code>length</code> (20.0)</td></tr><tr><td><code>lock_washer</code></td><td>A lock washer: "split" (DIN 127 spring ring, approximated as an</td><td class="lib-params"><code>thread</code> M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>style</code> split &middot; external_tooth &middot; internal_tooth</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/fasteners_pins.png" alt="fasteners_pins library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>fasteners_pins</code> <span class="lib-count">6 parts</span></h3>
+            <p class="muted">Dowel / spring / clevis / cotter pins, E-clips, retaining rings</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>dowel_pin</code></td><td>An ISO 2338 hardened dowel pin (h8 tolerance): a plain cylinder with</td><td class="lib-params"><code>diameter</code> (5.0)<br><code>length</code> (16.0)</td></tr><tr><td><code>spring_pin</code></td><td>An ISO 8752 slotted spring (roll) pin: a rolled tube (wall ~0.12 x</td><td class="lib-params"><code>diameter</code> (4.0)<br><code>length</code> (20.0)</td></tr><tr><td><code>e_clip</code></td><td>A DIN 6799 E-clip (external retaining ring): a flat annulus sized for</td><td class="lib-params"><code>shaft</code> (6.0)</td></tr><tr><td><code>retaining_ring</code></td><td>A DIN 471 (external, sprung onto a shaft) / DIN 472 (internal,</td><td class="lib-params"><code>bore</code> (20.0)<br><code>kind</code> internal &middot; external</td></tr><tr><td><code>clevis_pin</code></td><td>An ISO 2341 clevis pin: a cylindrical shank with a flat head at one</td><td class="lib-params"><code>diameter</code> (5.0)<br><code>length</code> (20.0)</td></tr><tr><td><code>cotter_pin</code></td><td>An ISO 1234 / DIN 94 split (cotter) pin, simplified as a single</td><td class="lib-params"><code>diameter</code> (3.2)<br><code>length</code> (40.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/fasteners_rigging.png" alt="fasteners_rigging library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>fasteners_rigging</code> <span class="lib-count">6 parts</span></h3>
+            <p class="muted">Eye &amp; U-bolts, thumb / self-tapping screws, wing &amp; coupling nuts</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>eye_bolt</code></td><td>A DIN 444-style lifting eye bolt: a threaded shank topped by a round</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>threads</code> (cosmetic)</td></tr><tr><td><code>u_bolt</code></td><td>A U-bolt: two vertical threaded legs joined by a semicircular bend.</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>width</code> (30.0)<br><code>height</code> (50.0)<br><code>threads</code> (cosmetic)</td></tr><tr><td><code>thumb_screw</code></td><td>A knurled thumb screw (hand-tightening fastener): a flat knurled</td><td class="lib-params"><code>thread</code> M3 &middot; M4 &middot; M5 &middot; M6 &middot; M8<br><code>length</code> (12.0)<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>coupling_nut</code></td><td>A long coupling nut (DIN 6334-style): a hex prism with a through</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>wing_nut</code></td><td>A wing nut (DIN 315-style butterfly nut): a bored cylindrical body</td><td class="lib-params"><code>thread</code> M4 &middot; M5 &middot; M6 &middot; M8 &middot; M10<br><code>threads</code> cosmetic &middot; real</td></tr><tr><td><code>self_tapping_screw</code></td><td>A self-tapping / wood screw: a flat head flush at z = 0, tapering</td><td class="lib-params"><code>diameter</code> (4.0)<br><code>length</code> (16.0)<br><code>threads</code> cosmetic &middot; real</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+      <section class="section-panel">
+        <h2>Electronics &amp; enclosure</h2>
+        <p>Through-hole parts, connectors, breakout-board footprints and panel controls to design cases around.</p>
+        
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/electronics.png" alt="electronics library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>electronics</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">LEDs, tactile buttons, 0.1&quot; headers, barrel jacks, cooling fans</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>led</code></td><td>A through-hole LED. size: "3mm" or "5mm".</td><td class="lib-params"><code>size</code> 3mm &middot; 5mm</td></tr><tr><td><code>tact_button</code></td><td>A tactile push button. size: "6mm" or "12mm".</td><td class="lib-params"><code>size</code> 6mm &middot; 12mm</td></tr><tr><td><code>header</code></td><td>A 0.1" (2.54mm pitch) pin header. pins: count per row (free text);</td><td class="lib-params"><code>pins</code> (4)<br><code>rows</code> 1 &middot; 2</td></tr><tr><td><code>barrel_jack</code></td><td>A PCB-mount DC barrel jack (5.5x2.1mm class).</td><td class="lib-params">&mdash;</td></tr><tr><td><code>fan</code></td><td>A square cooling fan. size: "40mm", "60mm", "80mm", or "120mm".</td><td class="lib-params"><code>size</code> 40mm &middot; 60mm &middot; 80mm &middot; 120mm</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/electronics_more.png" alt="electronics_more library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>electronics_more</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Buzzers, heat sinks, fuse holders, LED matrices, Pi HATs</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>buzzer</code></td><td>A through-hole piezo buzzer can (see module docstring for dims).</td><td class="lib-params"><code>kind</code> active &middot; passive</td></tr><tr><td><code>heat_sink</code></td><td>An extruded aluminium heat sink (see module docstring for dims).</td><td class="lib-params"><code>style</code> TO220 &middot; RPi</td></tr><tr><td><code>fuse_holder</code></td><td>A panel/PCB fuse-clip holder for a 5x20 mm fuse (see module</td><td class="lib-params">&mdash;</td></tr><tr><td><code>led_matrix</code></td><td>An LED matrix / display module (see module docstring for dims).</td><td class="lib-params"><code>size</code> 8x8 &middot; MAX7219</td></tr><tr><td><code>rpi_hat</code></td><td>A Raspberry Pi HAT/shield footprint board (see module docstring</td><td class="lib-params">&mdash;</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/connectors.png" alt="connectors library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>connectors</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">USB, JST, Dupont, screw terminal blocks, panel jacks</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>usb</code></td><td>A USB receptacle shell: an outer metal shell block minus a mouth</td><td class="lib-params"><code>kind</code> A &middot; C &middot; micro</td></tr><tr><td><code>jst</code></td><td>A JST-XH style 2.5mm-pitch wire-to-board header. White nylon housing</td><td class="lib-params"><code>pins</code> (2)</td></tr><tr><td><code>dupont</code></td><td>A Dupont/"berg" 2.54mm female housing: black nylon shell</td><td class="lib-params"><code>pins</code> (1)<br><code>rows</code> 1 &middot; 2</td></tr><tr><td><code>terminal_block</code></td><td>A screw terminal block, 5.08mm pitch: green body (5.08*ways) long x</td><td class="lib-params"><code>ways</code> (2)</td></tr><tr><td><code>barrel_jack_panel</code></td><td>A panel-mount DC barrel jack, simplified as an on-axis (+Z) stack: a</td><td class="lib-params">&mdash;</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/modules.png" alt="modules library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>modules</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">OLED, stepper-driver, buck-converter and battery-holder boards</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>oled_display</code></td><td>A small OLED display breakout module.</td><td class="lib-params"><code>size</code> 0.96 &middot; 1.3</td></tr><tr><td><code>relay_module</code></td><td>A multi-channel relay breakout board (generic Songle SRD-05VDC-SL-C</td><td class="lib-params"><code>channels</code> (1)</td></tr><tr><td><code>stepper_driver</code></td><td>An A4988/DRV8825-class stepper driver carrier board (Pololu-style</td><td class="lib-params"><code>kind</code> A4988 &middot; DRV8825</td></tr><tr><td><code>buck_converter</code></td><td>A mini buck (step-down) converter module (MP1584EN-class). PCB</td><td class="lib-params">&mdash;</td></tr><tr><td><code>battery_holder</code></td><td>A battery holder. cell "18650": box (count*19.5 + 3) x 72 x 20 mm</td><td class="lib-params"><code>cell</code> AA &middot; 18650 &middot; CR2032<br><code>count</code> (1)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/board_footprints.png" alt="board_footprints library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>board_footprints</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Arduino, Raspberry Pi and ESP32 board footprints</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>arduino_uno</code></td><td>An Arduino Uno R3-footprint board: PCB outline, the 4 real mounting</td><td class="lib-params">&mdash;</td></tr><tr><td><code>arduino_nano</code></td><td>An Arduino Nano-footprint board: PCB outline, 4 corner mounting</td><td class="lib-params">&mdash;</td></tr><tr><td><code>raspberry_pi</code></td><td>A Raspberry Pi-footprint board: PCB outline, the 4 real mounting</td><td class="lib-params"><code>model</code> 3B &middot; 4B &middot; Zero</td></tr><tr><td><code>esp32_devkit</code></td><td>An ESP32 DevKit-footprint board: PCB outline, two 15-pin header</td><td class="lib-params">&mdash;</td></tr><tr><td><code>pcb_standoff</code></td><td>A nylon PCB support/board-mount spacer: a round spacer body (dia</td><td class="lib-params"><code>height</code> (6.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/switches.png" alt="switches library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>switches</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Rocker / toggle / slide switches, potentiometers, rotary encoders</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>rocker_switch</code></td><td>A KCD1-class panel rocker switch (21x15mm cutout).</td><td class="lib-params">&mdash;</td></tr><tr><td><code>toggle_switch</code></td><td>A mini toggle switch (MTS-101 class).</td><td class="lib-params">&mdash;</td></tr><tr><td><code>slide_switch</code></td><td>An SPDT slide switch.</td><td class="lib-params">&mdash;</td></tr><tr><td><code>potentiometer</code></td><td>A WH148 / Alpha-class 9mm panel potentiometer.</td><td class="lib-params"><code>shaft</code> round &middot; d_flat &middot; knurled</td></tr><tr><td><code>rotary_encoder</code></td><td>An EC11-class rotary encoder with pushbutton.</td><td class="lib-params">&mdash;</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/enclosure.png" alt="enclosure library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>enclosure</code> <span class="lib-count">4 parts</span></h3>
+            <p class="muted">DIN rail, draw latches, bar handles and vent grilles</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>din_rail</code></td><td>A TS35 top-hat DIN rail (EN 60715): the 35 mm hat section every</td><td class="lib-params"><code>length</code> (150.0)<br><code>size</code> TS35</td></tr><tr><td><code>draw_latch</code></td><td>A draw (toggle) latch: the base plate that screws to the enclosure and</td><td class="lib-params"><code>size</code> (60.0)</td></tr><tr><td><code>handle</code></td><td>A U-shaped pull handle: two feet and a round bar between them.</td><td class="lib-params"><code>span</code> (120.0)<br><code>height</code> (32.0)<br><code>bar_d</code> (12.0)</td></tr><tr><td><code>vent_grille</code></td><td>A ventilation panel: a plate with a louvre pattern cut through, for</td><td class="lib-params"><code>width</code> (60.0)<br><code>height</code> (40.0)<br><code>pattern</code> slots &middot; grid</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+      <section class="section-panel">
+        <h2>Structural, fluid &amp; mounts</h2>
+        <p>Framing, magnets, pneumatics and the brackets that bolt everything down.</p>
+        
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/extrusions.png" alt="extrusions library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>extrusions</code> <span class="lib-count">1 part</span></h3>
+            <p class="muted">T-slot aluminium extrusion rails (20/30/40 series)</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>rail</code></td><td>A T-slot extrusion rail.</td><td class="lib-params"><code>profile</code> 2020 &middot; 2040 &middot; 4020 &middot; 2060 &middot; 3030 &middot; 3060 &middot; 4040 &middot; 4080<br><code>length</code> (100.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/framing.png" alt="framing library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>framing</code> <span class="lib-count">4 parts</span></h3>
+            <p class="muted">T-slot nuts, corner brackets, angle plates and end caps for those rails</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>t_slot_nut</code></td><td>A T-slot nut: the sliding block that drops into a rail slot and takes a</td><td class="lib-params"><code>size</code> (20)<br><code>thread</code> <span class="lib-opt">optional</span><br><code>style</code> (tee)</td></tr><tr><td><code>corner_bracket</code></td><td>An L bracket joining two rails at 90 deg: two arms, each with a</td><td class="lib-params"><code>size</code> (20)<br><code>thickness</code> <span class="lib-opt">optional</span><br><code>gusset</code> (True)</td></tr><tr><td><code>angle_plate</code></td><td>A flat joining plate (straight, not cornered): a strip with a row of</td><td class="lib-params"><code>size</code> (20)<br><code>holes</code> (2)<br><code>thickness</code> <span class="lib-opt">optional</span></td></tr><tr><td><code>end_cap</code></td><td>A moulded end cap that closes a rail's open end: a plate the size of the</td><td class="lib-params"><code>size</code> (2020)<br><code>thickness</code> (2.5)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/mounts.png" alt="mounts library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>mounts</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">VESA plates, tripod bosses, caster wheels, piano hinges, cable clips</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>vesa_mount</code></td><td>A VESA (FDMI) monitor-mount adapter plate: a square plate with a</td><td class="lib-params"><code>pattern</code> 75 &middot; 100 &middot; 200</td></tr><tr><td><code>tripod_mount</code></td><td>A 1/4"-20 camera/tripod mounting boss: a 30x30x4mm backing plate</td><td class="lib-params">&mdash;</td></tr><tr><td><code>caster_wheel</code></td><td>A V-groove skate/V-slot caster wheel: an annular revolve with a</td><td class="lib-params"><code>diameter</code> (24.0)<br><code>bore</code> (8.0)</td></tr><tr><td><code>piano_hinge</code></td><td>A continuous ("piano") hinge: two flat leaves (each 15mm wide x</td><td class="lib-params"><code>length</code> (100.0)</td></tr><tr><td><code>cable_clip</code></td><td>A cable saddle / P-clip: a block (width cable_d+8, depth cable_d+4,</td><td class="lib-params"><code>cable_d</code> (6.0)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/magnets_misc.png" alt="magnets_misc library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>magnets_misc</code> <span class="lib-count">3 parts</span></h3>
+            <p class="muted">Neodymium magnets, rubber feet, panel grommets</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>magnet</code></td><td>A neodymium magnet. shape: "disc" (solid cyl), "ring" (annular, uses</td><td class="lib-params"><code>shape</code> disc &middot; ring &middot; block<br><code>diameter</code> (10.0)<br><code>bore</code> (0.0)<br><code>thickness</code> (3.0)</td></tr><tr><td><code>rubber_foot</code></td><td>A rubber bumper foot: a truncated cone with a central screw through-hole.</td><td class="lib-params"><code>size</code> small &middot; medium &middot; large</td></tr><tr><td><code>grommet</code></td><td>A rubber panel grommet (spool): flanges grip a panel of `thickness`</td><td class="lib-params"><code>panel_bore</code> (8.0)<br><code>thickness</code> (1.5)</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lib-module">
+          <figure class="lib-figure">
+            <img src="images/pneumatics.png" alt="pneumatics library parts" loading="lazy" width="1200" height="1200" />
+          </figure>
+          <div class="lib-body">
+            <h3><code>pneumatics</code> <span class="lib-count">5 parts</span></h3>
+            <p class="muted">Push-fit bowden fittings, hose barbs, O-rings, cable glands</p>
+            <table class="detail-table lib-table">
+              <thead><tr><th>Factory</th><th>What it is</th><th>Parameters</th></tr></thead>
+              <tbody><tr><td><code>pneumatic_fitting</code></td><td>A PC-series push-to-connect bowden fitting: threaded base (-Z) + hex</td><td class="lib-params"><code>size</code> PC4-M6 &middot; PC4-M10 &middot; PC6-M6</td></tr><tr><td><code>bowden_coupler</code></td><td>An inline PC4-class tube-to-tube coupler: two collet bodies back to</td><td class="lib-params"><code>tube_od</code> (4.0)</td></tr><tr><td><code>hose_barb</code></td><td>A barbed hose-to-thread adapter: threaded base (-Z) + hex + a barbed</td><td class="lib-params"><code>hose_id</code> (6.0)<br><code>thread</code> M6 &middot; M8 &middot; G1_4</td></tr><tr><td><code>o_ring</code></td><td>An elastomer O-ring: a torus (AS568/ISO 3601 sizing convention —</td><td class="lib-params"><code>inner_d</code> (10.0)<br><code>cross_d</code> (2.0)</td></tr><tr><td><code>cable_gland</code></td><td>A metric/PG-thread cable gland: threaded body (-Z) + hex + a domed</td><td class="lib-params"><code>size</code> M12 &middot; M16 &middot; PG7 &middot; PG9</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+</div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

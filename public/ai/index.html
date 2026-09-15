@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bring your own AI — FlywheelCAD</title>
+<meta name="description" content="FlywheelCAD has no AI inside and needs none: every model is a Python file. Give the AI Scripting Guide to Claude Code, Cursor or any chat assistant and let it write and refactor your models.">
+<link rel="canonical" href="https://flywheelcad.com/ai/">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/" aria-current="page">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <div class="wrap page-head">
+    <h1>No AI inside. Any AI outside.</h1>
+    <p class="lede">FlywheelCAD has no cloud connection and no account. It doesn't need one: every document is ordinary Python, so the coding agent you already use can write and refactor your models.</p>
+    <ul class="checks">
+      <li>The AI Scripting Guide is the whole API in one Markdown file, sized for a context window.</li>
+      <li>Drop it in, describe the part, and let the agent do the hard geometry — gear teeth, airfoil sections, part families.</li>
+      <li>Whatever it writes stays a <code>.py</code> file. Open it, run it, keep going by hand or by prompt.</li>
+    </ul>
+    <div class="cta">
+      <a class="btn btn-primary" href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">Download the AI Scripting Guide (.md)</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section-tight" aria-labelledby="use">
+      <h2 id="use">How to use it</h2>
+
+      <h3>Claude Code</h3>
+      <ol>
+        <li>Put <code>FlywheelCAD-AI-Scripting-Guide.md</code> in your project folder.</li>
+        <li>Add one line to the project's <code>CLAUDE.md</code>: <em>Before writing FlywheelCAD code, read FlywheelCAD-AI-Scripting-Guide.md.</em></li>
+        <li>Describe the part: <em>“Write main.py for a 60 × 40 mm plate with four M3 clearance holes, fully constrained, sizes as variables.”</em></li>
+        <li>Open the result in FlywheelCAD. If it is already open, keep it open: the app watches <code>main.py</code> and picks up the agent's edits.</li>
+      </ol>
+
+      <h3>Cursor</h3>
+      <ol>
+        <li>Add the guide under <em>@Docs</em> with its URL, <code>https://flywheelcad.com/downloads/FlywheelCAD-AI-Scripting-Guide.md</code> — or keep the file in the workspace.</li>
+        <li>Mention it in the chat (<code>@FlywheelCAD-AI-Scripting-Guide.md</code>), or point a project rule at it so every chat reads it.</li>
+        <li>Describe the part and let the agent write the <code>.py</code> file.</li>
+        <li>Open the file in FlywheelCAD and carry on by hand or by prompt.</li>
+      </ol>
+
+      <h3>Any chat assistant</h3>
+      <ol>
+        <li>Attach the guide to the conversation.</li>
+        <li>Describe the part, and ask for one complete script.</li>
+        <li>Save the reply as a <code>.py</code> file.</li>
+        <li>Open it in FlywheelCAD. If a run fails, paste the error back; the guide tells the assistant what the messages mean.</li>
+      </ol>
+
+      <div class="notice">
+        <p><strong>A document is a program.</strong> The first time FlywheelCAD opens a script it has not seen before, it asks before running it. Expect that prompt for anything an agent generates, and read the script first if you did not write the request yourself.</p>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="round-trip">
+      <h2 id="round-trip">It stays your model</h2>
+      <p>What the agent writes is the same kind of file you get from clicking in the app. Constraints it adds show up in the sketch; dimensions it binds to variables appear in the Variables panel; a hole it places can be edited like any other. Change something in the GUI and the script updates — hand it back to the agent later and it reads your changes.</p>
+      <p>The guide covers the rules that are easy to get wrong: how regions are declared, which arguments take variables, how components and mates work, and what each error means. The <a href="/manual/python-syntax/">Python syntax</a> page is the human-oriented version of the same reference.</p>
+    </section>
+
+    <div class="example-links">
+      <a class="btn btn-primary" href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">Download the AI Scripting Guide</a>
+      <a class="btn btn-soft" href="/examples/">See the examples</a>
+    </div>
+  </div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

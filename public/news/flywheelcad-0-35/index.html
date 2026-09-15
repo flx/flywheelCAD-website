@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FlywheelCAD 0.35 — FlywheelCAD news</title>
+<meta name="description" content="FlywheelCAD 0.35: glTF export, watertight meshes, variables in point coordinates, placements and mates, Find and Replace in the script pane, and clearer errors.">
+<link rel="canonical" href="https://flywheelcad.com/news/flywheelcad-0-35/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FlywheelCAD 0.35">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/" aria-current="true">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <article class="wrap page-head post">
+    <p class="eyebrow"><a href="/news/">News</a></p>
+    <h1>FlywheelCAD 0.35</h1>
+    <p class="post-meta"><time datetime="2026-09-14">14 September 2026</time> · Release notes</p>
+    <p class="lede">The first release since 0.25 on 27 August. The download button always fetches the newest build.</p>
+    <div class="cta"><a class="btn btn-primary" href="https://github.com/flx/flywheelcad-releases/releases/latest/download/FlywheelCAD.dmg">Download 0.35</a></div>
+
+    <h2>New</h2>
+    <ul>
+      <li><strong>glTF 2.0 export.</strong> The Body menu and <code>render -o</code> now write <code>.glb</code> or <code>.gltf</code> + <code>.bin</code> beside 3MF, STL and OBJ: one named node per body, with a PBR material carrying each body's colour and finish.</li>
+      <li><strong>Variables almost everywhere.</strong> A <code>cad.variable</code> or an expression now works in point coordinates (<code>cad.point2d(w * 0.35, 25)</code>), a circle's radius, <code>region(inside=…)</code>, body transforms and patterns, instance placement, mates, and <code>polar</code> / <code>ring</code> / <code>grid</code>. A circle's radius keeps its link as a radius dimension; everywhere else outside dimensions the value is resolved when the script runs. The manual's <a href="/manual/#ch3-variables-elsewhere">Variables outside dimensions</a> has the details.</li>
+      <li><strong>Find and Replace</strong> in the script pane (⌘F, ⌥⌘F, ⌘G).</li>
+      <li><strong>Watertight exports.</strong> A series of meshing fixes — the lattice offset, shell reorientation, an arc-sampling floor for revolves, exact meshing for outlines with round holes — so exported bodies come out as closed, consistently wound solids. When one does not, the warning names the body and where the defect is.</li>
+      <li><strong>Exports contain what you see.</strong> A boolean's consumed operands no longer export beside its result.</li>
+    </ul>
+
+    <h2>Changed</h2>
+    <ul>
+      <li><strong>One rule for numbers.</strong> Numeric strings such as <code>"12"</code> are now refused wherever a number is expected; <code>Decimal</code>, <code>Fraction</code> and numpy scalars are converted. A script that passed numbers as strings needs the quotes removed.</li>
+      <li><code>sweep</code>'s <code>twist</code>, <code>helix</code>'s <code>start_angle</code> and <code>cad.text</code>'s <code>size</code>, <code>angle</code> and <code>distance</code> refuse a variable instead of silently using their default.</li>
+      <li>A circle or arc given where a constraint expects a point now means its centre in every constraint, not only in <code>coincident</code>.</li>
+      <li>Clearer refusals: a region that cannot be traced names the inner loops it did not expect, and <code>region(name=…)</code> is accepted as a label.</li>
+    </ul>
+
+    <h2>Command line</h2>
+    <p><code>render</code> now reports problems in its exit code: <strong>1</strong> when a body's region no longer matches the script's final sketch (nothing is written), <strong>3</strong> when the solver did not converge, and <strong>4</strong> when the mesh is not a trustworthy closed solid (the file is written and the warning names the defect).</p>
+
+    <h2>Samples</h2>
+    <p>The <a href="/examples/">sample bundles</a> were refreshed with this site: the motor mount now mates every part onto named anchors, and the showcase bracket is fully constrained and uses the new variable syntax.</p>
+
+    <h2>Known limits</h2>
+    <ul>
+      <li>No STEP export: FlywheelCAD builds meshes, not boundary representations.</li>
+      <li>No 2D drawing sheets; sketches export as DXF and SVG.</li>
+      <li>macOS on Apple silicon only.</li>
+    </ul>
+    <p class="note">Found a problem? <a href="https://github.com/flx/flywheelcad-releases/issues">Report it on GitHub</a>.</p>
+  </article>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

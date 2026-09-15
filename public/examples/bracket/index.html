@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bracket — FlywheelCAD examples</title>
+<meta name="description" content="A mounting bracket driven by four variables in FlywheelCAD: rough sketch, geometric constraints, dimensions bound to variables, fully constrained.">
+<link rel="canonical" href="https://flywheelcad.com/examples/bracket/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bracket — a fully constrained sketch in FlywheelCAD">
+<meta property="og:image" content="https://flywheelcad.com/assets/img/examples/bracket-sketch.jpg">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/" aria-current="true">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <div class="wrap-wide page-head">
+    <p class="eyebrow"><a href="/examples/">Examples</a></p>
+    <h1>Bracket</h1>
+    <p class="lede">A mounting bracket driven by four variables. The sketch is fully constrained: the solver badge reads <strong>Fully constrained</strong>, and nothing moves until you change a dimension.</p>
+  </div>
+
+  <div class="wrap-wide section-tight">
+    <div class="render-pair">
+      <figure>
+        <img class="render" src="/assets/img/examples/bracket-sketch.jpg" width="1600" height="1200" alt="The bracket sketch in FlywheelCAD: a trapezoid with a hole, dimensioned WIDTH = 80, HEIGHT = 50, SLANT = 105°, hole radius 4.5, positioned 28 and 25 from the edges.">
+        <figcaption>The sketch. Each dimension shows the variable that drives it.</figcaption>
+      </figure>
+      <figure>
+        <img class="render" src="/assets/img/examples/bracket-3d.jpg" width="1600" height="1200" loading="lazy" alt="The bracket extruded 6 mm with rounded edges and one mounting hole.">
+        <figcaption>Extruded 6 mm, edges rounded by the extrude itself.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section-tight">
+      <h2>What it shows</h2>
+      <ul class="checks">
+        <li>A rough outline pinned by geometric constraints: coincident with the origin, horizontal, parallel, vertical. The right edge's lean is an angle dimension.</li>
+        <li>Dimensions bound to shared variables: <code>WIDTH</code>, <code>HEIGHT</code>, <code>SLANT</code>, <code>HOLE_DIA</code>. Change one in the Variables panel and the sketch re-solves.</li>
+        <li>New in 0.35: points written with variables (<code>cad.point2d(WIDTH, 0.0)</code>) as the starting guess, and a hole whose radius expression keeps its link (<code>cad.circle2d(hc, HOLE_DIA / 2.0)</code> adds the radius dimension for you).</li>
+      </ul>
+    </section>
+
+    <section class="section-tight">
+      <h2>The code</h2>
+      <pre data-src="Samples/showcase/01_sketch_bracket.fwcad/main.py:28-31,42-45,53-56,60-62,68-71"><code>WIDTH    = cad.variable(80.0, driving=True)   # overall bracket width  (mm)
+HEIGHT   = cad.variable(50.0, driving=True)   # overall bracket height (mm)
+SLANT    = cad.variable(105.0, driving=True)  # angle of the right edge (deg)
+HOLE_DIA = cad.variable(9.0, driving=True)    # mounting-hole diameter (mm)
+
+A = cad.point2d(0.0, 0.0)             # bottom-left  (origin corner)
+B = cad.point2d(WIDTH, 0.0)           # bottom-right
+C = cad.point2d(WIDTH - 12.0, HEIGHT) # top-right (pulled in by the slant)
+D = cad.point2d(0.0, HEIGHT)          # top-left
+
+cad.coincident(A, origin_xy)          # the origin corner sits ON the origin
+cad.horizontal(l_bottom)              # bottom edge is level …
+cad.parallel(l_top, l_bottom)         # … and the top edge is parallel to it
+cad.vertical(l_left)                  # left edge is plumb (so, square to the bottom)
+
+cad.distance(A, B, WIDTH)             # bottom edge length  = WIDTH
+cad.distance(A, D, HEIGHT)            # left edge length    = HEIGHT
+cad.angle(l_bottom, l_right, SLANT)   # lean of the right edge
+
+hc   = cad.point2d(WIDTH * 0.35, HEIGHT / 2.0)
+hole = cad.circle2d(hc, HOLE_DIA / 2.0)
+cad.point_line_distance(hc, l_bottom, HEIGHT / 2.0)  # centred top-to-bottom
+cad.point_line_distance(hc, l_left, WIDTH * 0.35)    # 35% in from the left edge</code></pre>
+      <p class="code-caption">Every constraint you click in the sketch is one line here, and every line here shows up as a constraint. Excerpt from <code>01_sketch_bracket.fwcad/main.py</code>; the lines between draw the four edges.</p>
+    </section>
+
+    <div class="example-links">
+      <a class="btn btn-primary" href="/downloads/FlywheelCAD-Showcase.zip">Download the Showcase Projects (16 KB)</a>
+      <a class="btn btn-soft" href="/manual/#ch3-dimensions">Manual: dimensions &amp; variables</a>
+    </div>
+    <p class="note">The bracket is project 1 of 5 in the Showcase bundle. Open <code>01_sketch_bracket.fwcad</code> in FlywheelCAD.</p>
+  </div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

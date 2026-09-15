@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python Syntax — FlywheelCAD manual</title>
+<meta name="description" content="Reference for FlywheelCAD 0.35's Python API: every cad.* call with its exact signature, how variables and expressions are handled, and multi-file helper imports.">
+<link rel="canonical" href="https://flywheelcad.com/manual/python-syntax/">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/" aria-current="true">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<!-- chrome:manual-nav -->
+<nav class="fw-mnav" aria-label="Manual">
+  <p class="fw-mnav-title">Manual</p>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/" aria-current="page">Python syntax</a></li>
+    <li><a href="/manual/component-library/">Component library</a></li>
+  </ul>
+  <p class="fw-mnav-extra"><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></p>
+</nav>
+<details class="fw-mdrop">
+  <summary>Manual pages</summary>
+  <ul>
+    <li><a href="/manual/">User manual</a></li>
+    <li><a href="/manual/ui/">UI interactions</a></li>
+    <li><a href="/manual/python-backend/">Python script backend</a></li>
+    <li><a href="/manual/python-syntax/" aria-current="page">Python syntax</a></li>
+    <li><a href="/manual/component-library/">Component library</a></li>
+    <li><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI scripting guide (.md)</a></li>
+  </ul>
+</details>
+<!-- /chrome:manual-nav -->
+<main id="main" class="doc">
+<header class="doc-head">
+<p class="eyebrow">Reference</p>
+        <h1>Python Syntax</h1>
+<p class="lede">Every public call in the FlywheelCAD 0.35 Python API, with its exact signature.</p>
+        <p>
+          A FlywheelCAD document is ordinary Python. The app runs it with the bundled
+          <code>flywheelcad</code> module, whose calls emit CAD commands that the app then parses and
+          replays. Every script starts the same way:
+        </p>
+        <pre><code># flywheelcad-format: 1
+from flywheelcad import *
+cad = FlywheelCAD()</code></pre>
+        <p>
+          The signatures below are copied from <code>flywheelcad.py</code>, with two keyword arguments
+          left out to keep them readable: almost every call that creates something also accepts
+          <code>name=</code> (otherwise the name comes from the variable you assign the result to), and
+          every call that creates a body also accepts <code>quality=</code> (a per-body mesh quality).
+          <code>name=</code> is shown only where it matters. Items marked <span class="new">0.35</span>
+          changed or arrived after version 0.25.
+        </p>
+        <p>
+          Working with an AI coding assistant? The scripting guide carries the same API plus the rules
+          and worked patterns in one Markdown file you can drop into the assistant's context.
+        </p>
+        <p><a class="btn btn-soft btn-small" href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">Download the AI scripting guide (.md)</a></p>
+</header>
+<div class="doc-body">
+<section class="section-panel">
+        <h2 id="quick-start">Quick start</h2>
+        <p>
+          A plate driven by variables, with a hole whose size follows one of them, built with a helper
+          module that sits next to the main script. Save the two files together &mdash; inside a
+          <code>.fwcad</code> bundle, or as a flat <code>.py</code> with the helper beside it:
+        </p>
+        <pre><code>Plate.fwcad/
+  main.py      # the script
+  shapes.py    # a helper module, imported by name</code></pre>
+        <pre><code># main.py
+# flywheelcad-format: 1
+from flywheelcad import *
+cad = FlywheelCAD()
+
+from shapes import rectangle              # shapes.py sits next to this file
+
+WIDTH = cad.variable(80, driving=True)    # editable in the Variables panel
+HEIGHT = cad.variable(50, driving=True)
+HOLE_DIA = cad.variable(8, driving=True)
+INSET = cad.variable(12, fixed=True)      # a constant
+
+cad.with_sketch("xy")
+outline = rectangle(WIDTH, HEIGHT)
+bottom, right, top, left = outline
+
+centre = cad.point2d(INSET, INSET)        # starts at (12, 12); no constraint added
+hole = cad.circle2d(centre, HOLE_DIA / 2)  # radius 4, plus a linked radius dimension
+cad.point_line_distance(point=centre, line=bottom, distance=INSET)
+cad.point_line_distance(point=centre, line=left, distance=INSET)
+
+plate = cad.extrude("xy", region(loop=outline, holes=[[hole]],
+                                 inside=(WIDTH * 0.75, HEIGHT / 2)), 6)
+cad.set_color(plate, "steel", finish="metallic")</code></pre>
+        <pre><code># shapes.py
+from flywheelcad import *
+cad = FlywheelCAD()                       # the same shared object main.py uses
+
+
+def rectangle(width, height, plane="xy"):
+    """A constrained width x height rectangle, lower-left corner on the origin."""
+    bl = cad.point2d(0, 0)
+    br = cad.point2d(width, 0)            # a variable seeds the point; no constraint added
+    tr = cad.point2d(width, height)
+    tl = cad.point2d(0, height)
+    bottom = cad.line2d(bl, br)
+    right = cad.line2d(br, tr)
+    top = cad.line2d(tr, tl)
+    left = cad.line2d(tl, bl)
+    cad.horizontal(line=bottom)
+    cad.horizontal(line=top)
+    cad.vertical(line=right)
+    cad.vertical(line=left)
+    cad.coincident(p0=bl, p1=cad.origin(plane))
+    cad.length(line=bottom, length=width)  # dimensions keep the variables live
+    cad.length(line=right, length=height)
+    return [bottom, right, top, left]</code></pre>
+        <p>
+          Change <code>WIDTH</code>, <code>HEIGHT</code> or <code>HOLE_DIA</code> in the Variables panel
+          and the plate re-solves, because the lengths and the hole radius are dimensions. The point
+          coordinates and the <code>inside=</code> point were only computed from the variables when the
+          script ran; the geometry follows because the dimensions move it, not because the points remember
+          the variables. The sketch is fully constrained: the corner sits on the origin, and the hole
+          centre is held <code>INSET</code> from two edges.
+        </p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="variables">Variables and expressions</h2>
+        <p>
+          A <code>cad.variable</code>, or arithmetic on variables, can go anywhere a number is expected.
+          Only a dimension stores it as a live expression; everywhere else it is resolved to its number
+          when the script runs. The long form, with more examples, is in the user manual:
+          <a href="/manual/#ch3-variables-elsewhere">&sect;3.4, Variables outside dimensions</a>.
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td>Dimensions: <code>cad.length</code>, <code>cad.distance</code>, <code>cad.radius</code>, <code>cad.angle</code>, <code>cad.point_line_distance</code>, and <code>cad.extrude(distance=&hellip;, offset=&hellip;)</code></td>
+              <td>
+                Live. The document keeps the expression, so editing a driving variable re-solves the
+                sketch or rebuilds the body. Expressions must be linear: <code>+ - * /</code>, where a
+                variable may be multiplied or divided by a number but not by another variable.
+                <code>offset=</code> stays live like <code>distance</code>.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.point2d(x, y)</code>, <code>cad.point(x, y, z)</code></td>
+              <td>
+                Resolved to numbers. For <code>point2d</code> the number is only the solver's starting
+                guess &mdash; no constraint is added. Dimension the point if it must follow the
+                variable.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.circle2d(center, radius)</code></td>
+              <td>
+                The radius is resolved <em>and</em> a <code>cad.radius(circle=&hellip;, radius=&hellip;)</code>
+                dimension carrying the expression is added right after the circle, so editing the variable
+                resizes it. That dimension has no line of its own in the script, so change the variable
+                rather than editing the dimension in the sketch. A non-linear radius such as
+                <code>w * h</code> or <code>a / b</code> still builds the right circle, with a warning, but
+                keeps no link.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>region(inside=(x, y))</code></td>
+              <td>Each coordinate is resolved. An inside point has no link to lose.<span class="new">0.35</span></td>
+            </tr>
+            <tr>
+              <td><code>cad.move</code>, <code>cad.rotate</code>, <code>cad.scale</code>, <code>cad.offset</code>, <code>cad.pattern_linear</code>, <code>cad.pattern_circular</code>, <code>cad.instance</code>, <code>cad.mate_coincident</code>, <code>cad.mate_align</code>, <code>polar()</code>, <code>ring()</code>, <code>grid()</code></td>
+              <td>
+                Coordinates, angles, factors, spacings and offsets are resolved to numbers. The document
+                records the number, so editing the variable afterwards does <strong>not</strong> move the
+                body. Counts (<code>count=</code>, <code>ring(count)</code>, <code>grid(nx, ny)</code>) must
+                be plain integers.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.text(size=, angle=, distance=, at=, direction=)</code>, <code>cad.helix(start_angle=)</code></td>
+              <td>Resolved the same way: the value is recorded, not linked.<span class="new">0.35</span></td>
+            </tr>
+            <tr>
+              <td><code>cad.extrude(twist=, draft=, edge_radius=)</code>, <code>cad.sweep(twist=, edge_radius=)</code>, a boolean's blend <code>radius=</code></td>
+              <td>
+                Plain numbers only. A variable is refused with an error naming the argument; a Python
+                variable that holds a number is fine.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>a ** 2</code></td>
+              <td>
+                Computed at script time into a plain number, because the document's expression grammar has
+                no exponent. The link is lost, and both operands need values.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.variable()</code> with no <code>value=</code></td>
+              <td>
+                Only the solver knows its value, so it cannot be used where a number is resolved; the error
+                names the argument and says why. It works in dimensions.
+              </td>
+            </tr>
+            <tr>
+              <td>What counts as a number</td>
+              <td>
+                <code>int</code>, <code>float</code>, <code>Decimal</code>, <code>Fraction</code> and numpy
+                scalars (converted to a double). Strings &mdash; even <code>"12"</code> &mdash;
+                <code>bytes</code>, <code>bool</code> and <code>complex</code> are refused wherever a number
+                is expected; convert with <code>float(...)</code> yourself.<span class="new">0.35</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>w = cad.variable(80, driving=True)
+hole = cad.variable(9, driving=True)
+depth = cad.variable(12, driving=True)
+
+cad.with_sketch("xy")
+c = cad.point2d(w * 0.35, 25)            # x = 28: a starting guess, no constraint added
+h1 = cad.circle2d(c, hole / 2)           # radius 4.5, plus a linked cad.radius dimension
+peg = cad.extrude("xy", region(loop=[h1], inside=(w * 0.35, 25)), depth)   # distance stays live
+row = cad.pattern_linear(peg, count=3, spacing=w / 4)   # spacing is recorded as 20</code></pre>
+        <p>
+          A variable is a symbol, not a number the script can read: <code>w.value</code> raises an error
+          that names the forms above. And a plain <code>cad.variable(40)</code> &mdash; neither
+          <code>fixed</code> nor <code>driving</code> &mdash; is a free unknown the solver may move; a
+          coordinate taken from it keeps the value it had at that line. Declare values you use as
+          coordinates <code>fixed=True</code> or <code>driving=True</code>.
+        </p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="setup">Setup and planes</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>FlywheelCAD()</code></td>
+              <td>
+                Returns the shared API object. Every call returns the same object, so helper modules share
+                one naming counter. It also puts the plane origins <code>origin_xy</code>,
+                <code>origin_yz</code> and <code>origin_zx</code> into the calling module's globals. Bind
+                it to the name <code>cad</code> at module level: the app inserts document settings such as
+                mesh quality right after that line.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.with_sketch(plane_name)</code></td>
+              <td>
+                Makes a plane the current sketch: <code>"xy"</code>, <code>"yz"</code>, <code>"zx"</code>
+                or a custom plane's name. Later 2D geometry lands on it. Also puts
+                <code>origin_&lt;plane_name&gt;</code> into your globals.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.origin(plane_name)</code></td>
+              <td>Returns a plane's origin point (the same point as <code>origin_xy</code> and so on), for pinning geometry to it.</td>
+            </tr>
+            <tr>
+              <td><code>cad.point(x, y, z)</code></td>
+              <td>
+                A fixed 3D reference point in world coordinates, for custom planes, anchors and 3D sweep
+                paths. A coordinate may be a variable or expression; it is resolved to its
+                number.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.create_sketch_plane(p1, p2, p3, name=None)</code></td>
+              <td>
+                A sketch plane through three 3D points: origin at <code>p1</code>, normal
+                <code>(p2 &minus; p1) &times; (p3 &minus; p1)</code>. The points can be
+                <code>cad.point(...)</code> refs, sketch points or body topology points such as
+                <code>box.v0</code>. Always pass <code>name=</code>: without it planes are numbered
+                <code>custom1</code>, <code>custom2</code>, &hellip; in creation order, so inserting one
+                renumbers the rest.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Sketch axes: on <code>"xy"</code> sketch x is +X, sketch y is +Y and an extrude goes +Z; on
+          <code>"yz"</code> they are +Y, +Z and +X; on <code>"zx"</code> they are <strong>&minus;X</strong>,
+          +Z and +Y.
+        </p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="sketch">Sketch geometry</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>cad.point2d(x, y)</code></td>
+              <td>
+                A 2D point in the current sketch's coordinates. A variable or expression is resolved to its
+                number, which is only the solver's starting guess; no constraint is
+                added.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.line2d(p1, p2, construction=False)</code></td>
+              <td>
+                A line from <code>p1</code> to <code>p2</code>. <code>construction=True</code> (on any 2D
+                primitive) makes guide geometry: drawn dashed and ignored by region detection, so it can
+                never be part of a region loop.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.circle2d(center, radius, construction=False)</code></td>
+              <td>
+                A circle about a center point. A variable or expression for <code>radius</code> is resolved,
+                and a linked <code>cad.radius</code> dimension carrying it is added after the circle (see
+                <a href="#variables">Variables and expressions</a>).<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.arc2d(center, start, end, clockwise=False, construction=False)</code></td>
+              <td>An arc about <code>center</code> from <code>start</code> to <code>end</code>; both end points must lie on one circle. Counter-clockwise unless <code>clockwise=True</code>.</td>
+            </tr>
+            <tr>
+              <td><code>cad.ellipse2d(focus1, focus2, point, construction=False)</code></td>
+              <td>An ellipse from its two foci and one point on its rim.</td>
+            </tr>
+            <tr>
+              <td><code>cad.spline2d(points, closed=False, construction=False)</code></td>
+              <td>A cubic spline through a list of points. <code>closed=True</code> joins the last point back to the first.</td>
+            </tr>
+            <tr>
+              <td><code>cad.fillet(line1, line2, radius)</code></td>
+              <td>
+                Rounds the corner where two elements &mdash; lines or arcs, in any mix &mdash; share an end
+                point: both retract to the tangent points and a tangent arc bridges them, with tangency and
+                radius constrained so the fillet survives re-solves. Returns the arc; list it between the
+                two in a region loop, <code>region(loop=[l1, f1, l2, ...])</code>. Menu:
+                <em>Modify &rarr; Fillet Corner&hellip;</em>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.trim(element, near)</code></td>
+              <td>
+                Trims <code>element</code> in place at the intersection nearest <code>near=(x, y)</code>.
+                Returns <code>(element, split)</code>; <code>split</code> (named
+                <code>&lt;element&gt;_1</code>) exists only if the trim cut the element in two. Menu:
+                <em>Modify &rarr; Trim (T)</em>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.mirror_elements(elements, symmetry_line)</code></td>
+              <td>
+                Mirrors a list of elements across a line. Copies are named <code>&lt;source&gt;_m</code>
+                (<code>_m2</code>, <code>_m3</code>, &hellip; for repeat mirrors); reach them with
+                <code>ref("l1_m")</code>. Menu: <em>Modify &rarr; Mirror (M)</em>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.merge_points(source, target)</code></td>
+              <td>Welds <code>source</code> into <code>target</code>; afterwards both names refer to one point. Menu: <em>Modify &rarr; Merge Points</em>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          There is no <code>cad.*</code> pattern call for sketch geometry. <em>Modify &rarr;
+          Pattern&hellip;</em> writes an ordinary <code>for</code> loop instead &mdash; one construction line
+          plus an <code>equal_lines</code> and an <code>angle</code> per copy, driven by a
+          <code>cad.variable</code> step &mdash; so the copies stay linked to the source. The recipe is under
+          <a href="#helpers">Placement helpers</a> and in the manual's
+          <a href="/manual/#ch3-editing">&sect;3.5</a>.
+        </p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="constraints">Geometric constraints</h2>
+        <p>
+          Constraints relate existing elements. They take no value, and all but the two tangent-line
+          constraints return nothing. The keyword form &mdash; <code>cad.horizontal(line=l1)</code> &mdash;
+          is what the app writes when you add a constraint in the GUI; the positional form is also
+          accepted. Wherever a constraint or dimension expects a point, you may pass a circle or arc and it
+          means its centre.<span class="new">0.35</span>
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>cad.horizontal(line)</code></td><td>Makes a line horizontal in the sketch.</td></tr>
+            <tr><td><code>cad.vertical(line)</code></td><td>Makes a line vertical in the sketch.</td></tr>
+            <tr><td><code>cad.parallel(line1, line2)</code></td><td>Keeps two lines parallel.</td></tr>
+            <tr><td><code>cad.perpendicular(line1, line2)</code></td><td>Keeps two lines at 90&deg;.</td></tr>
+            <tr><td><code>cad.collinear(line1, line2)</code></td><td>Puts two lines on the same infinite line.</td></tr>
+            <tr><td><code>cad.coincident(p0, p1)</code></td><td>Makes two points one point by merging <code>p0</code> into <code>p1</code> &mdash; the same command as <code>cad.merge_points(source=p0, target=p1)</code>, not an extra equation.</td></tr>
+            <tr><td><code>cad.point_on_line(point, line)</code></td><td>Holds a point on a line.</td></tr>
+            <tr><td><code>cad.point_on_circle(point, circle)</code></td><td>Holds a point on a circle.</td></tr>
+            <tr><td><code>cad.point_on_ellipse(point, ellipse)</code></td><td>Holds a point on an ellipse.</td></tr>
+            <tr><td><code>cad.point_on_plane(point, plane)</code></td><td>Holds a 3D point on a plane, e.g. <code>cad.point_on_plane(point=p1, plane="xy")</code>.</td></tr>
+            <tr><td><code>cad.fixed(element)</code></td><td>Pins an element's own position &mdash; point, line, circle, arc, ellipse or spline &mdash; at its current values. It counts toward the degrees-of-freedom badge and does not override a conflicting constraint (the badge then reads conflicting). An arc pins its centre and radius, not its end points.</td></tr>
+            <tr><td><code>cad.concentric(circle1, circle2)</code></td><td>Gives two circles one centre.</td></tr>
+            <tr><td><code>cad.equal_lines(line1, line2)</code></td><td>Gives two lines equal length.</td></tr>
+            <tr><td><code>cad.equal_radius(circle1, circle2)</code></td><td>Gives two circles equal radius.</td></tr>
+            <tr><td><code>cad.circle_tangent_line(circle, line, anchor=None, name=None)</code></td><td>Makes a circle tangent to a line and returns the tangency point. Assign the result (<code>tp = cad.circle_tangent_line(circle=c1, line=l1)</code>) or pass <code>name=</code>; otherwise it raises <code>ValueError</code>. <code>anchor=(x, y)</code> picks which of two tangent points the solver goes to.</td></tr>
+            <tr><td><code>cad.circle_tangent_circle(circle1, circle2)</code></td><td>Makes two circles tangent.</td></tr>
+            <tr><td><code>cad.ellipse_tangent_line(ellipse, line, anchor=None, name=None)</code></td><td>Makes an ellipse tangent to a line and returns the tangency point; the same assignment rule applies.</td></tr>
+            <tr><td><code>cad.spline_tangent_line(spline, line, control_point=None, control_point_index=None)</code></td><td>Makes a spline tangent to a line at one control point, chosen by point ref (<code>control_point=</code>) or position (<code>control_point_index=</code>). Omit both to let the app choose.</td></tr>
+            <tr><td><code>cad.symmetry_line(p1, p2, symmetry_line)</code></td><td>Makes two points mirror images about a line.</td></tr>
+            <tr><td><code>cad.symmetry_plane(point1, point2, plane)</code></td><td>Makes two points mirror images about a plane.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="dimensions">Dimensions and variables</h2>
+        <p>
+          A dimension pins a value: a number, a <code>cad.variable</code>, or a linear expression of
+          variables. Dimensions are the only calls that keep an expression live. A dimension written at
+          module level can be edited in the sketch (double-click it); one bound to an expression or to a
+          plain Python variable is left as written by that editor.
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>cad.variable(value=None, fixed=False, driving=False)</code></td>
+              <td>
+                Declares a named scalar (named after the variable you assign it to).
+                <code>fixed=True</code>: a constant that never moves. <code>driving=True</code>: held while
+                solving but editable in the Variables panel or with <code>cad.update</code>. Neither: a free
+                unknown the solver may move. Passing both raises <code>ValueError</code>.
+                <code>value</code> must be a number: <code>Decimal</code>, <code>Fraction</code> and numpy
+                scalars are converted, and a string such as <code>"12"</code> is refused.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr><td><code>cad.length(line, length)</code></td><td>A line's length, e.g. <code>cad.length(line=l1, length=w)</code>.</td></tr>
+            <tr><td><code>cad.distance(p0, p1, distance)</code></td><td>Straight-line distance between two points. To hold a distance from an axis, use <code>cad.point_line_distance</code>.</td></tr>
+            <tr><td><code>cad.radius(circle, radius)</code></td><td>A circle's radius, e.g. <code>cad.radius(circle=c1, radius=8)</code>.</td></tr>
+            <tr><td><code>cad.angle(line1, line2, angle=None)</code></td><td>The angle between two lines, in degrees. The signature defaults <code>angle</code> to <code>None</code>, but a run without it fails (&ldquo;Missing dimension value parameter&rdquo;), so always pass it.</td></tr>
+            <tr><td><code>cad.point_line_distance(point, line, distance)</code></td><td>Perpendicular distance from a point to a line.</td></tr>
+            <tr>
+              <td><code>cad.fraction(refA, refB, multiplier)</code></td>
+              <td>
+                Keeps one variable a multiple of another, <code>refA = multiplier &times; refB</code>, e.g.
+                <code>cad.fraction(refA=chord, refB=span, multiplier=0.25)</code>. Works since 0.35; earlier
+                builds failed on every run.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr><td><code>cad.update(changes)</code></td><td>Changes values after the fact and re-solves: <code>cad.update({w: {"value": 60}})</code> for a variable, <code>cad.update({p1: {"x": 10, "y": 20}})</code> for a point.</td></tr>
+            <tr><td><code>cad.ensure_convergence()</code></td><td>Solves the current sketch now, so the script continues from settled positions.</td></tr>
+            <tr><td><code>cad.label_offset(key, dx, dy)</code></td><td>Records where a dimension label was dragged in the sketch (<code>key</code> such as <code>"length:l1"</code>). The app writes these lines and they carry no geometry; leave existing ones alone and don't write new ones.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>w = cad.variable(80, fixed=True)
+clearance = cad.variable(12, driving=True)
+cad.length(line=l1, length=w * 2 + clearance)</code></pre>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="regions">Regions</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>region(loop=None, holes=None, inside=None, name=None)</code><br><code>cad.region(loop=None, holes=None, inside=None, name=None)</code></td>
+              <td>
+                The closed area a body is built from; the free function and the method are identical.
+                <code>loop</code> (required) lists the outer boundary's elements in traversal order;
+                <code>holes</code> is a list of hole loops, each its own list; <code>inside=(x, y)</code> is a
+                point in the material, in sketch coordinates, that picks between areas tracing the same loop.
+                Every closed loop drawn inside <code>loop</code> on the same sketch must be listed under
+                <code>holes=</code> (or claimed as material by an <code>inside=</code> point in it), or the
+                region is refused with those loops named. <code>inside=</code> coordinates may be variables,
+                resolved to numbers; <code>name=</code> is a label only &mdash; a region is not a named
+                element, so it creates nothing (a warning says so).<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>rev(element)</code></td>
+              <td>
+                Marks a loop element as traversed against its own direction (lines run
+                <code>p1</code> &rarr; <code>p2</code>, circles and arcs counter-clockwise, splines in point
+                order). It is written as <code>-l4</code>. Also used in <code>cad.path(chain=...)</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>ref(name)</code></td>
+              <td>A reference to an element by its script name, for names without a Python variable &mdash; a mirrored copy, for example: <code>ref("l1_m")</code>. A name that is not a valid identifier raises <code>ValueError</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="bodies">Bodies from sketches</h2>
+        <p>
+          Each call returns a body ref (for example <code>body1</code>) and also accepts
+          <code>export=</code>: <code>False</code> leaves the body out of mesh export. It must be a real
+          <code>bool</code>.
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>cad.extrude(plane, region, distance, direction=None, export=None, edge_radius=None, twist=None, twist_center=None, offset=None, draft=None)</code></td>
+              <td>
+                Extrudes a region along the plane normal. <code>direction</code>: <code>None</code> or
+                <code>"positive"</code> (along the normal), <code>"negative"</code>, or
+                <code>"symmetric"</code> (both ways). <code>offset</code> shifts the start off the plane
+                (negative is allowed). <code>draft</code> tapers the walls by that many degrees, measured
+                from the sketch-side face (positive slopes outward). <code>twist</code> turns the profile by
+                that many degrees over the full height, about <code>twist_center</code> (default: the region
+                centroid). <code>edge_radius</code> rounds every edge of the body. <code>distance</code> and
+                <code>offset</code> take a number, variable or expression and stay live;
+                <code>edge_radius</code>, <code>twist</code> and <code>draft</code> take plain numbers
+                only.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.revolve(plane, region, axis_line=None, angle=None, export=None, edge_radius=None, **kwargs)</code></td>
+              <td>
+                Revolves a region about a line in the same sketch by <code>angle</code> degrees
+                (<code>360</code> for a full solid). <code>axis_line</code> and <code>angle</code> are both
+                required; the <code>None</code> defaults and <code>**kwargs</code> exist only to refuse the
+                removed <code>axis=</code> spelling with a clear message.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.loft(start_plane, start_region, end_plane=None, end_region=None, export=None, edge_radius=None)</code></td>
+              <td>
+                A solid between two profiles on two planes, which need not be parallel. <code>end_plane</code>
+                and <code>end_region</code> are required. Write all four as keywords
+                (<code>start_plane=&hellip;</code>): a positional call runs, but the Body Inspector then
+                cannot edit that body's quality. Either region may also be a list of regions, lofted as one
+                profile.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.multi_loft(planes, regions, export=None, edge_radius=None)</code></td>
+              <td>
+                One smooth solid through two or more sections &mdash; a list of planes and a list of regions of
+                the same length &mdash; with no internal seams. The surface is interpolated, so it can bulge
+                between sections; for straight-walled round stacks use one revolve.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="notice">
+          <strong>Body refs:</strong> extrude and revolve bodies expose their far-face vertices as
+          attributes &mdash; <code>box.v0</code>, <code>box.v1</code>, &hellip;; hole vertices as
+          <code>box.h0_v0</code>; a symmetric extrude as <code>box.pos_v0</code> / <code>box.neg_v0</code>.
+          Pass them to <code>cad.create_sketch_plane(...)</code> or <code>cad.project_point(...)</code>.
+          A mistyped attribute is not caught (<code>box.v9999</code> returns a ref that fails later), so
+          when unsure build reference geometry with <code>cad.point(x, y, z)</code>.
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="sweeps">Sweeps, paths and text</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>cad.helix(radius, pitch, turns, axis_origin=(0, 0, 0), axis_dir=(0, 0, 1), start_angle=0.0, left_handed=False)</code></td>
+              <td>
+                A helical path &mdash; a path handle, not a body: coil radius, rise per turn and number of
+                turns (may be fractional), about an axis. <code>start_angle</code> is in degrees; a variable
+                there is resolved to its number.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.path(plane, chain)</code></td>
+              <td>
+                An open path on a sketch plane from lines, arcs and splines joined end to end, e.g.
+                <code>cad.path("xy", chain=[l1, rev(a2), s3])</code>. It must not close, and a full circle,
+                ellipse or closed spline cannot be in it. Keep it clear of the profile's own elements.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.path3d(points, closed=False, up=None)</code></td>
+              <td>
+                A smooth 3D path through named 3D points (<code>cad.point(...)</code> refs, not tuples).
+                <code>up=(x, y, z)</code> sets the profile's starting orientation. <code>closed=True</code> is
+                not supported yet and raises.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.sweep(plane=None, region=None, path=None, sections=None, twist=0.0, export=None, edge_radius=None)</code></td>
+              <td>
+                Sweeps a profile along a path. Pass either <code>plane</code> + <code>region</code> or
+                <code>sections=[...]</code>, not both. The profile's 2D coordinates are used unchanged as its
+                offset from the path, so draw it centred on the sketch origin &mdash; the coil radius belongs
+                to the helix, not the profile. <code>twist</code> is total degrees over the path;
+                <code>twist</code> and <code>edge_radius</code> take plain numbers only.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>sweep_section(fraction, plane, region)</code></td>
+              <td>
+                One section for <code>cad.sweep(sections=[...])</code>: a profile at an arc-length
+                <code>fraction</code> along the path. Fractions must rise strictly from exactly
+                <code>0.0</code> to exactly <code>1.0</code>; holes are not supported in this form; two
+                sections that differ only in size must sit on different planes.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.text(string, size=10.0, font="Helvetica", at=(0.0, 0.0), angle=0.0, direction=None, distance=None, align="left", export=None, plane=None)</code></td>
+              <td>
+                Writes <code>string</code> with a system font. <code>size</code> is the cap height in mm,
+                <code>at</code> the baseline origin, <code>align</code> <code>"left"</code>,
+                <code>"center"</code> or <code>"right"</code>; <code>angle</code> (degrees) or
+                <code>direction=(dx, dy)</code> turns the run. Without <code>distance</code> the glyphs become
+                fixed spline outlines in the sketch; with <code>distance=</code> each glyph becomes its own
+                extruded body (not unioned). <code>plane=</code> builds on another plane without switching the
+                current sketch. Returns one ref per character. <code>size</code>, <code>angle</code>,
+                <code>distance</code>, <code>at</code> and <code>direction</code> accept variables, resolved to
+                numbers.<span class="new">0.35</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>cad.with_sketch("xy")
+wire = cad.circle2d(cad.point2d(0, 0), 1.2)          # profile at the sketch origin
+coil = cad.helix(radius=8, pitch=4, turns=5)         # the coil radius lives on the path
+spring = cad.sweep("xy", region(loop=[wire]), coil)</code></pre>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="transforms">Booleans, transforms and patterns</h2>
+        <p>
+          Booleans consume their inputs: the operands are hidden and so leave the export. Transforms and
+          patterns keep the source and return new bodies. Coordinates, angles, factors and spacings in
+          transforms and patterns accept variables, resolved to numbers &mdash; editing the variable later
+          does not move the body.<span class="new">0.35</span>
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>cad.bool_union(*bodies, export=None, blend=None, radius=None)</code></td><td>The union of two or more bodies. <code>blend="smooth"</code> (a rounded seam) or <code>"chamfer"</code> (a 45&deg; bevel) needs exactly two bodies and a <code>radius</code> greater than 0; <code>"sharp"</code> is the default. <code>name=</code> may not repeat an operand's name.</td></tr>
+            <tr><td><code>cad.bool_difference(*bodies, export=None, blend=None, radius=None)</code></td><td>The first body minus all the others.</td></tr>
+            <tr><td><code>cad.bool_intersection(*bodies, export=None, blend=None, radius=None)</code></td><td>Only the volume common to all the bodies.</td></tr>
+            <tr><td><code>cad.offset(body, distance=None)</code></td><td>A new body grown (positive) or shrunk (negative) by <code>distance</code> in every direction; <code>distance</code> is required. No <code>export=</code>. Shell a body by differencing a shrunk copy from it.</td></tr>
+            <tr><td><code>cad.move(body, *args, translate=None, export=None, **kwargs)</code></td><td>A moved copy: <code>cad.move(b, translate=(10, 0, 0))</code>. Pass <code>translate</code> by keyword; <code>*args</code> and <code>**kwargs</code> exist only to refuse the removed <code>cad.move(b, dx, dy, dz)</code> and <code>dx=</code>/<code>dy=</code>/<code>dz=</code> forms by name.</td></tr>
+            <tr><td><code>cad.rotate(body, axis=(0, 0, 1), angle=0, center=(0, 0, 0), export=None)</code></td><td>A copy rotated by <code>angle</code> degrees about <code>axis</code> through <code>center</code>.</td></tr>
+            <tr><td><code>cad.scale(body, factor=None, sx=None, sy=None, sz=None, export=None)</code></td><td>A scaled copy: uniform <code>factor</code>, or per axis with <code>sx</code>/<code>sy</code>/<code>sz</code>. <code>factor</code> wins if both are given.</td></tr>
+            <tr><td><code>cad.mirror_body(body, plane="yz", export=None)</code></td><td>A copy mirrored across a standard or custom plane.</td></tr>
+            <tr><td><code>cad.copy(body, export=None)</code></td><td>An identical copy in place.</td></tr>
+            <tr><td><code>cad.pattern_linear(body, direction=(1, 0, 0), count=2, spacing=10, export=None, name=None)</code></td><td>Copies along <code>direction</code> (normalised), <code>spacing</code> mm apart. <code>count</code> includes the seed and runs 2&ndash;1000. Returns <code>[seed, copy_1, &hellip;]</code>; the copies are named <code>&lt;name&gt;_1</code>, <code>&lt;name&gt;_2</code>, &hellip; after the variable you assign to or <code>name=</code> &mdash; one of the two is required.</td></tr>
+            <tr><td><code>cad.pattern_circular(body, axis=(0, 0, 1), count=4, angle=360, center=(0, 0, 0), export=None, name=None)</code></td><td>Copies around <code>axis</code> through <code>center</code>. <code>angle</code> is the total sweep, up to &plusmn;360: a full circle steps by <code>angle / count</code>, a partial fan by <code>angle / (count &minus; 1)</code> so a copy sits at each end.</td></tr>
+            <tr><td><code>cad.delete_body(body)</code></td><td>Deletes a body, and every boolean or offset body built from it.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="components">Components, instances and mates</h2>
+        <p>
+          Components define a reusable part once and place it many times. A component body is
+          written <em>flat</em> inside a <code>with cad.component(...)</code> block &mdash; blocks
+          never nest; larger structures nest by <em>instancing</em> other components. A component
+          that is never instanced is transparent: it builds the top-level design, so a component
+          file opened directly behaves like a normal editable part.
+        </p>
+        <pre><code>with cad.component("bracket"):
+    cad.with_sketch("xy")
+    # ... sketch + region r ...
+    body = cad.extrude("xy", r, 5)
+    cad.set_color(body, "steel", finish="metallic")
+    cad.component_export(body)                                # assembly-visible part
+    cad.component_export_point("hole", cad.point(10, 0, 0))   # named anchor for mating
+
+b1 = cad.instance("bracket")
+b2 = cad.instance("bracket", translate=(50, 0, 0), mirror_plane="zx")
+cad.mate_coincident(b2, "hole", b1.hole, offset=(0, 0, 5))</code></pre>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>cad.component(name, label=None)</code></td><td>Use as <code>with cad.component("bracket"):</code>. Everything inside builds the component's own sub-design. With <code>as wing</code>, <code>wing.component_export(...)</code> works as well. <code>label=</code> is a display name for the UI.</td></tr>
+            <tr><td><code>cad.parametric(prefix, build, *, label=None, **params)</code></td><td>Builds one component per distinct parameter set from a zero-argument <code>build()</code> and returns its name for <code>cad.instance</code>; the same parameters reuse the build. <code>label=</code> is keyword-only, never passed to <code>build</code>, and not part of the memo key.</td></tr>
+            <tr><td><code>cad.component_name(prefix, *parts)</code></td><td>The deterministic, identifier-safe name <code>parametric</code> uses for a parameter set.</td></tr>
+            <tr><td><code>cad.has_component(name)</code></td><td>True if that component was already emitted in this run.</td></tr>
+            <tr><td><code>cad.component_export(body, name=None)</code></td><td>Marks a body as a visible part of the component. With several exports, each surfaces on an instance as <code>&lt;instance&gt;_&lt;name&gt;</code>; <code>name=</code> sets that label.</td></tr>
+            <tr><td><code>cad.component_export_point(name, point)</code></td><td>Promotes a point to a named anchor. Each instance exposes it as <code>&lt;instance&gt;.&lt;name&gt;</code> (e.g. <code>b1.hole</code>) for mates and assembly geometry.</td></tr>
+            <tr><td><code>cad.instance(component, translate=None, mirror_plane=None, scale=None, axis=None, angle=None, center=None, export=None, **kwargs)</code></td><td>Places a component. Transforms apply in a fixed order: scale, rotate (<code>angle</code> about <code>axis</code> through <code>center</code>), mirror, translate. Returns a body ref usable anywhere a body is. <code>export=False</code> leaves every part out of export; <code>quality=</code> is accepted but ignored with a warning (set quality inside the component). <code>**kwargs</code> exists only to refuse the removed <code>mirror=</code> spelling. Placement values accept variables, resolved to numbers.<span class="new">0.35</span></td></tr>
+            <tr><td><code>cad.mate_coincident(instance, anchor, target, offset=None)</code></td><td>Snap: moves the instance so its <code>anchor</code> sits on <code>target</code> &mdash; another instance's anchor, a topology point or a sketch point &mdash; plus an optional <code>(dx, dy, dz)</code> offset. Position only. <code>offset</code> accepts variables.<span class="new">0.35</span></td></tr>
+            <tr><td><code>cad.mate_align(instance, anchor1, anchor2, target1, target2, offset=None)</code></td><td>Snap and orient: <code>anchor1</code> onto <code>target1</code> (plus <code>offset</code>), and the direction <code>anchor1</code> &rarr; <code>anchor2</code> turned parallel to <code>target1</code> &rarr; <code>target2</code>.</td></tr>
+            <tr><td><code>cad.mate(instance, anchor, target)</code></td><td>Solved mate. Several <code>cad.mate</code> calls on one instance are solved together as one rigid pose &mdash; three point mates fix position and orientation. The target never moves. No <code>offset=</code>.</td></tr>
+            <tr><td><code>cad.mate_axis(instance, anchor1, anchor2, target1, target2)</code></td><td>Solved: holds the instance axis <code>anchor1</code> &rarr; <code>anchor2</code> collinear with <code>target1</code> &rarr; <code>target2</code>, leaving slide along it and spin about it free (a <code>cad.mate</code> onto a point on the axis pins them). No <code>offset=</code>.</td></tr>
+          </tbody>
+        </table>
+        <div class="notice">
+          <strong>Refused mates:</strong> the run fails, naming the rule, if a solved mate
+          (<code>cad.mate</code> or <code>cad.mate_axis</code>) is used on an instance placed with a
+          rotation, mirror or non-unit scale, is combined with a snap mate on the same instance, is chained
+          onto another solved-mated instance, targets the instance's own anchor, or sits inside a component
+          block. Details: <a href="/manual/#ch7-mates">manual &sect;7.4</a>.
+        </div>
+        <div class="notice">
+          <strong>Multi-file assemblies:</strong> component files live next to the assembly file and are
+          pulled in with plain <code>import fuselage</code> &mdash; the import defines the component, the
+          assembly places instances and mates them. Put those imports below
+          <code>cad = FlywheelCAD()</code>, because a component module emits its geometry when it is
+          imported. The Glider and AirplaneNested projects in the
+          <a href="/downloads/FlywheelCAD-Samples.zip">samples download</a> are complete worked examples,
+          including nested sub-assemblies that re-export parts and anchors of their own children.
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="appearance">Appearance, quality and export</h2>
+        <p>
+          <code>set_color</code>, <code>set_export</code>, <code>set_cell_size</code>, <code>hide</code> and
+          <code>show</code> accept a body ref or the body's name as a string. The string form is the only
+          way to reach the parts of an instance (e.g. <code>"motor_1_can"</code>) or a body whose variable
+          was reused in a loop.
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr>
+              <td><code>cad.set_color(body, color, finish=None)</code><br><code>body.set_color(color, finish=None)</code></td>
+              <td>
+                Display colour: <code>"#RRGGBB"</code>, <code>"#RRGGBBAA"</code> (alpha is translucency),
+                <code>"#RGB"</code>, a name such as <code>"red"</code> or <code>"steel"</code>, or an
+                <code>(r, g, b[, a])</code> tuple (0&ndash;1 or 0&ndash;255). <code>finish</code> is
+                <code>"matte"</code>, <code>"glossy"</code> (the default), <code>"metallic"</code> or
+                <code>"glass"</code>. Colours are written into 3MF and OBJ export, and glTF/GLB export carries
+                colour and finish as a PBR material; STL is geometry only. A colour set inside a component
+                applies to every instance.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.set_export(body, value=True)</code><br><code>body.set_export(value=True)</code></td>
+              <td>
+                Includes or excludes a body from mesh export, in every format. <code>value</code> must be
+                <code>True</code> or <code>False</code>. It applies to visible bodies: a hidden body is never
+                exported, and a flag set on it takes effect once it is shown.<span class="new">0.35</span>
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.hide(*bodies)</code></td>
+              <td>
+                Hides one or more bodies; saved with the document. Hidden bodies are left out of the
+                export.<span class="new">0.35</span> A boolean already hides the operands it consumes, so
+                don't hide those again. At least one body is required.
+              </td>
+            </tr>
+            <tr><td><code>cad.show(*bodies)</code></td><td>Shows hidden bodies again. Placed after a boolean, it brings a consumed operand back into view and into the export.</td></tr>
+            <tr>
+              <td><code>cad.set_cell_size(body, cell_size)</code><br><code>body.set_cell_size(cell_size)</code></td>
+              <td>
+                An absolute meshing cell size in mm for one body, for small features on a large sampled body
+                (booleans, lofts, rounded or drafted extrudes). No effect on bodies that mesh exactly, such as
+                plain extrudes and revolves. The minimum is <code>1e-6</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.set_quality(quality)</code></td>
+              <td>
+                The document's mesh quality: <code>"preview"</code>, <code>"standard"</code> (the default),
+                <code>"high"</code>, <code>"ultra"</code> or <code>"precision"</code>. It must come before the
+                first body, at most once, and never inside a component block. A per-body
+                <code>quality=</code> overrides it. <em>View &rarr; Mesh Quality</em> writes this line.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.set_units(units)</code></td>
+              <td>
+                The document's presentation unit: <code>"mm"</code>, <code>"cm"</code> or <code>"in"</code>.
+                It changes GUI entry and readouts and 3MF export only; the numbers in the script stay
+                millimetres. <em>View &rarr; Document Units</em> writes this line.
+              </td>
+            </tr>
+            <tr>
+              <td><code>cad.set_default_cell_size(cell_size)</code></td>
+              <td>
+                A document-wide default cell size in mm for bodies without their own. It raises every body's
+                cell budget, so it is expensive. It must come before the first body.
+                <em>View &rarr; Default Cell Size&hellip;</em> writes this line.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The last three are the user's controls: a script written for someone else should leave them out.
+          Mesh export is on the Body menu &mdash; <em>Export to 3MF&hellip;</em>, <em>STL&hellip;</em>,
+          <em>OBJ&hellip;</em>, <em>GLB&hellip;</em> and <em>glTF&hellip;</em> &mdash; and sketches export
+          from <em>File &rarr; Export Sketch as DXF&hellip;</em> or <em>SVG&hellip;</em>. The manual's
+          <a href="/manual/#ch8-export">&sect;8.7</a> lists what each format carries.
+        </p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="analysis">Section and projection</h2>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>cad.section(body, plane)</code></td><td>The cross-section where a plane cuts a body, drawn on that plane's sketch. An extrude (or a boolean, transform or instance of one) cut parallel to its profile gives true lines and arcs; anything else gives a sampled spline. Not the same as <code>sweep_section(...)</code>.</td></tr>
+            <tr><td><code>cad.project(body, plane)</code></td><td>Projects a body's edges onto a plane, drawing-style, with no hidden-line removal. True lines and arcs when viewed along an extrude's axis; otherwise a sampled silhouette spline.</td></tr>
+            <tr><td><code>cad.project_point(point, plane)</code></td><td>Projects one 3D point &mdash; a topology point such as <code>box.v0</code>, or a <code>cad.point</code> &mdash; onto a plane.</td></tr>
+          </tbody>
+        </table>
+        <p>All three are snapshots: they update only when the whole script re-runs.</p>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="helpers">Placement helpers</h2>
+        <p>
+          Free functions, not <code>cad.</code> methods. They compute numbers and emit nothing; use them to
+          place copies in a loop. Each scalar accepts a variable, resolved to its number; counts must be
+          plain integers.<span class="new">0.35</span>
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>polar(radius, angle, center=(0.0, 0.0))</code></td><td>The <code>(x, y)</code> at <code>radius</code> and <code>angle</code> degrees around <code>center</code>, counter-clockwise from the sketch's +x axis.</td></tr>
+            <tr><td><code>ring(count, step=None, start=0.0)</code></td><td><code>count</code> angles in degrees, starting at <code>start</code> and <code>step</code> apart. The default step, <code>360 / count</code>, makes a closed ring whose last item stops one step short of the first.</td></tr>
+            <tr><td><code>grid(nx, ny, dx, dy, origin=(0.0, 0.0))</code></td><td><code>nx &times; ny</code> <code>(x, y)</code> positions, <code>dx</code> and <code>dy</code> apart, row by row with x varying fastest; the seed position comes first.</td></tr>
+          </tbody>
+        </table>
+        <p>A ring of points that stays linked to its source &mdash; what <em>Modify &rarr; Pattern&hellip;</em> writes:</p>
+        <pre><code>step = cad.variable(60, driving=True)          # editable in the Variables panel
+c = cad.point2d(0, 0)
+p0 = cad.point2d(25, 0)
+l0 = cad.line2d(c, p0, construction=True)      # every copy is tied to this source
+for k, angle in enumerate(ring(6)):
+    if k == 0:
+        continue
+    pk = cad.point2d(*polar(25, angle))
+    lk = cad.line2d(c, pk, construction=True)
+    cad.equal_lines(line1=l0, line2=lk)
+    cad.angle(line1=l0, line2=lk, angle=step * k)</code></pre>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="libraries">Component libraries</h2>
+        <p>
+          Catalog parts come from <strong>component libraries</strong> &mdash; folders of parametric
+          part modules. A standard library ships in the app; add your own as folders under
+          <code>~/Documents/FlywheelCAD/Libraries/</code>. A library factory takes <code>cad</code>
+          first and returns a component name, so it drops straight into the assembly flow &mdash;
+          call it, then <code>cad.instance(...)</code> the result and mate to its exported anchors.
+        </p>
+        <pre><code>from lib.standard.steppers import stepper
+from lib.standard.bearings import bearing
+
+part = stepper(cad, size=17, length=40)                # a NEMA 17, 40 mm long
+motor = cad.instance(part)
+brg = cad.instance(bearing(cad, designation="625"))    # 5 mm bore, to fit the shaft
+cad.mate_coincident(brg, "face_b", motor.shaft_tip)</code></pre>
+        <p>
+          Inserting through <em>Component &rarr; Insert from Library&hellip;</em> is
+          <strong>copy-on-use</strong>: the module is vendored into the document&rsquo;s
+          <code>lib/&lt;library&gt;/</code> folder (with a provenance header, shown as a read-only tab),
+          so the design stays self-contained and a later library update never silently changes it.
+          A few of the standard modules (every factory also accepts <code>quality=</code>):
+        </p>
+        <table class="detail-table">
+          <tbody>
+            <tr><td><code>lib.standard.steppers</code></td><td><code>stepper(cad, size=17, length=None, shaft_length=None, body="square")</code> &mdash; NEMA 8, 11, 14, 17, 23 and 34 stepper motors, square or round body. Anchors <code>mount_face</code>, <code>shaft_tip</code>, <code>shaft_base</code>, <code>bolt_0</code>&ndash;<code>bolt_3</code>.</td></tr>
+            <tr><td><code>lib.standard.servos</code></td><td><code>servo(cad, size="standard")</code>, <code>horn(cad, style="single", spline="standard", length=None)</code> &mdash; hobby servos and control horns.</td></tr>
+            <tr><td><code>lib.standard.fasteners</code></td><td><code>cap_screw(cad, thread="M3", length=12.0, threads="cosmetic")</code>, <code>hex_nut(cad, thread="M3", threads="cosmetic")</code>, <code>washer(cad, thread="M3")</code>, <code>clearance(cad, thread="M3", length=12.0, head_pocket=False)</code>, <code>tap(cad, thread="M3", length=10.0)</code> &mdash; metric hardware and the matching hole bodies to subtract.</td></tr>
+            <tr><td><code>lib.standard.bearings</code></td><td><code>bearing(cad, designation="608", flanged=False)</code> &mdash; deep-groove ball bearings. Anchors <code>face_a</code>, <code>face_b</code>, <code>center</code>.</td></tr>
+            <tr><td><code>lib.standard.extrusions</code></td><td><code>rail(cad, profile="2020", length=100.0)</code> &mdash; T-slot aluminium extrusion (20, 30 and 40 series).</td></tr>
+            <tr><td><code>lib.standard.linkage</code></td><td><code>ball_link(cad, thread="M2")</code>, <code>clevis(cad, thread="M2")</code>, <code>pushrod(cad, diameter=2.0, length=80.0)</code> &mdash; RC linkage hardware.</td></tr>
+          </tbody>
+        </table>
+        <p>The full catalogue &mdash; gears, electronics, framing, mounts and more &mdash; is on the <a href="/manual/component-library/">Component library</a> page.</p>
+        <div class="notice">
+          <strong>Standalone parts:</strong> to place a loose component <code>.py</code> that
+          isn&rsquo;t in a library, use <em>Component &rarr; Insert Component from File&hellip;</em> &mdash;
+          it copies the file into the project and appends the import + instance lines. The
+          MotorMount project in the <a href="/downloads/FlywheelCAD-Samples.zip">samples download</a> is a
+          full standard-library showcase.
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2 id="multi-file">Including a separate Python file</h2>
+        <p>
+          Put the helper module next to the main script &mdash; inside the bundle, next to
+          <code>main.py</code>, for a <code>.fwcad</code> document. The document folder is on the import
+          path, so <code>from shapes import rectangle</code> finds <code>shapes.py</code>, as in the
+          <a href="#quick-start">Quick start</a>. A helper calls <code>FlywheelCAD()</code> itself and gets
+          the same shared object as the main script, so names stay unique across files.
+        </p>
+        <pre><code>MyProject.fwcad/
+  main.py
+  shapes.py
+  profiles.py</code></pre>
+        <p>
+          Imported modules appear as read-only tabs in the script pane. Don't add
+          <code>__init__.py</code> files, and don't give a module the name of a Python standard-library
+          module or one of <code>flywheelcad</code>, <code>sitecustomize</code>,
+          <code>component_shape</code>, <code>component_export_rewrite</code>,
+          <code>document_setting_rewrite</code> or <code>test</code>.
+        </p>
+        <div class="notice">
+          <strong>Flat file or project bundle:</strong> a document is either a plain <code>.py</code>
+          (helper modules and any vendored <code>lib/</code> sit next to it) or a <code>.fwcad</code>
+          <em>project bundle</em> &mdash; a folder whose <code>main.py</code> is the script, packaging
+          every imported file so it travels as one self-contained item. The import rules are identical
+          either way. To pull an existing helper into the project, use
+          <em>File &rarr; Add File to Project&hellip;</em> (it copies the file in under an importable
+          module name); <em>File &rarr; Convert to Project Bundle&hellip;</em> and
+          <em>Export as Flat Script&hellip;</em> convert between the two formats.
+        </div>
+      </section>
+</div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

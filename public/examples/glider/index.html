@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glider — FlywheelCAD examples</title>
+<meta name="description" content="A 4.4 m sailplane in FlywheelCAD: a parametric NACA 4412 wing function instanced twice, one mirrored, and a fuselage lofted as one solid.">
+<link rel="canonical" href="https://flywheelcad.com/examples/glider/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glider — lofts and parametric components in FlywheelCAD">
+<meta property="og:image" content="https://flywheelcad.com/assets/img/examples/glider.jpg">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/" aria-current="true">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <div class="wrap-wide page-head">
+    <p class="eyebrow"><a href="/examples/">Examples</a></p>
+    <h1>Glider</h1>
+    <p class="lede">A 4.4&nbsp;m sailplane assembled from three components. One parametric wing function builds a NACA&nbsp;4412 wing, placed twice with one mirrored. The fuselage is a single loft through 17 sections.</p>
+  </div>
+
+  <div class="wrap-wide section-tight">
+    <div class="render-pair">
+      <figure>
+        <img class="render" src="/assets/img/examples/glider.jpg" width="1600" height="1200" alt="The glider seen from above and to the side: long tapered wings, a slender lofted fuselage and a T-tail.">
+        <figcaption>Fuselage, two wing instances and a T-tail.</figcaption>
+      </figure>
+      <figure>
+        <img class="render" src="/assets/img/examples/glider-top.jpg" width="1600" height="1200" loading="lazy" alt="Top view of the glider showing the wing planform tapering toward both tips.">
+        <figcaption>Planform: both wings come from one function call.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section-tight">
+      <h2>What it shows</h2>
+      <ul class="checks">
+        <li>Multi-section lofts: the wing sweeps seven cosine-spaced NACA&nbsp;4412 sections into one seamless solid, with non-linear taper and washout. The fuselage lofts nose, cockpit and tail boom through 17.</li>
+        <li>A parametric component: <code>wing(...)</code> wraps <code>cad.parametric</code>, so each distinct set of arguments builds one component that every instance reuses.</li>
+        <li>Instances with transforms: the same wing placed right and left, the left one mirrored across <code>zx</code>. Every size comes from one knob, <code>MODEL_SCALE</code>, in <code>config.py</code>.</li>
+      </ul>
+    </section>
+
+    <section class="section-tight">
+      <h2>The code</h2>
+      <pre data-src="Samples/Glider.fwcad/wing.py:25-28"><code>def wing(span=2200.0, root_chord=260.0, tip_chord=110.0,
+         root_aoa=3.0, tip_aoa=-1.5, taper_exp=1.7, twist_exp=1.6,
+         dihedral_deg=2.5, n_stations=7, samples=10, te_thickness=3.0,
+         quality=None):</code></pre>
+      <pre data-src="Samples/Glider.fwcad/main.py:24-40"><code>import fuselage           # defines the "fuselage" component (sized by MODEL_SCALE)
+import tail               # defines the "tail" component (fin + stab)
+from wing import wing     # parametric wing factory
+
+# One wing shape (built to size), placed on both sides. Chords/span are scaled;
+# angles (twist, dihedral) are not.
+WING = wing(span=2200.0 * S, root_chord=260.0 * S, tip_chord=110.0 * S,
+            root_aoa=3.0, tip_aoa=-1.5, dihedral_deg=2.5, te_thickness=3.0 * S)
+
+# Wing seat: mid-high on the pod, just behind the cockpit.
+WING_X, WING_Z = 640.0 * S, 95.0 * S
+
+# --- Placement (components are already built to size; just position them) ---
+fus = cad.instance("fuselage")                                    # nose at origin
+wing_r = cad.instance(WING, translate=(WING_X, 0, WING_Z))        # right wing (+Y)
+wing_l = cad.instance(WING, mirror_plane="zx", translate=(WING_X, 0, WING_Z))  # left wing (-Y)
+emp = cad.instance("tail")                                        # T-tail on the boom</code></pre>
+      <p class="code-caption">One wing function, two wings (one with <code>mirror_plane="zx"</code>). Change the taper and both follow. The signature is from <code>wing.py</code>, the assembly from <code>main.py</code>; each component lives in its own file next to it.</p>
+    </section>
+
+    <div class="example-links">
+      <a class="btn btn-primary" href="/downloads/FlywheelCAD-Samples.zip">Download the Sample Assemblies (270 KB)</a>
+      <a class="btn btn-soft" href="/manual/#ch5-loft">Manual: lofts</a>
+      <a class="btn btn-soft" href="/manual/#ch7">Manual: components</a>
+    </div>
+    <p class="note">Open <code>Glider.fwcad</code> from the Sample Assemblies bundle.</p>
+  </div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>
