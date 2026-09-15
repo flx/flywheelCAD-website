@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FlywheelCAD — parametric CAD for macOS where every model is a Python file</title>
+<meta name="description" content="FlywheelCAD is a native macOS parametric CAD app for makers who like code. Sketch in the GUI, edit in Python, hand it to an AI agent, pick it up in the GUI again — it's the same file. No cloud, no account.">
+<link rel="canonical" href="https://flywheelcad.com/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FlywheelCAD">
+<meta property="og:url" content="https://flywheelcad.com/">
+<meta property="og:title" content="FlywheelCAD — Sketch in the GUI. Edit in Python. Hand it to an agent.">
+<meta property="og:description" content="Native macOS parametric CAD where every model is a Python file. Real constraint sketcher, mates, standard parts. No cloud, no account, your design is yours.">
+<meta property="og:image" content="https://flywheelcad.com/assets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://flywheelcad.com/assets/img/hero-poster.jpg">
+<meta name="twitter:title" content="FlywheelCAD — Sketch in the GUI. Edit in Python. Hand it to an agent.">
+<meta name="twitter:description" content="Native macOS parametric CAD where every model is a Python file. No cloud, no account, your design is yours.">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/" aria-current="page">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+
+  <section class="home-hero">
+    <div class="wrap">
+      <h1>Sketch in the GUI.<br>Edit in Python.<br>Hand it to an agent.<br>Pick it up in the GUI.</h1>
+      <p class="lede">A parametric CAD app for makers who like code but also like a powerful GUI — with real constraints, components, mates and standard parts.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/flx/flywheelcad-releases/releases/latest/download/FlywheelCAD.dmg">Download the beta</a>
+        <a class="btn btn-soft" href="/examples/">See the examples</a>
+      </div>
+      <p class="promise">No cloud. No account. Your design is yours.</p>
+      <p class="req">Free during the beta. Requires macOS 15.6 or later on Apple silicon.</p>
+    </div>
+    <div class="wrap-wide">
+      <video class="hero-video" data-autoplay muted loop playsinline preload="metadata"
+             poster="/assets/img/hero-poster.jpg" width="1920" height="1080"
+             aria-label="FlywheelCAD demo: sketching a bracket, constraining it, editing the Python, letting an AI agent add screw holes, then adjusting them in the GUI">
+        <source src="/video/flywheelcad-hero.webm" type="video/webm">
+        <source src="/video/flywheelcad-hero.mp4" type="video/mp4">
+      </video>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="how">
+    <div class="wrap-wide">
+      <div class="section-head">
+        <h2 id="how">How it works</h2>
+        <p>One document, three ways in. The GUI and the Python are the same model; an agent edits it the way you would.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-media"><img src="/assets/img/examples/bracket-sketch-card.jpg" width="800" height="600" loading="lazy" alt="A bracket sketch with dimensions bound to the variables WIDTH, HEIGHT and SLANT."></div>
+          <h3>Sketch with constraints</h3>
+          <p>Draw rough, then pin it: horizontal, vertical, tangent, equal, dimensions. The badge tells you when the sketch is fully constrained and which constraints conflict. Every constraint is one line of Python.</p>
+        </div>
+        <div class="step">
+          <div class="step-media"><pre><code>WIDTH = cad.variable(80.0, driving=True)
+B = cad.point2d(WIDTH, 0.0)
+cad.horizontal(l_bottom)
+cad.distance(A, B, WIDTH)
+hole = cad.circle2d(hc, HOLE_DIA / 2.0)</code></pre></div>
+          <h3>Edit the Python</h3>
+          <p>The right panel is the model. Change a variable, run it, and the part re-solves. Helper modules sit next to the main file; a document is a plain <code>.py</code> or a <code>.fwcad</code> bundle that packages everything it imports.</p>
+        </div>
+        <div class="step">
+          <div class="step-media"><pre><code>&gt; Add 4 holes to the bracket in
+  Bracket.fwcad. The holes are at the
+  4 outside edges of the bracket, have
+  a diameter of 10mm and edge distance
+  of 15mm. Drive the diameter and edge
+  distance by fixed variables with the
+  name "dia" and "dist".</code></pre></div>
+          <h3>Hand it to an agent, take it back</h3>
+          <p>No built-in AI. Give the scripting guide to Claude Code, Cursor or any agent, describe the part, and it writes ordinary FlywheelCAD Python. Open the result, edit a dimension it wrote, and the part follows. (The prompt above is the one in the video.)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="examples">
+    <div class="wrap-wide">
+      <div class="section-head">
+        <h2 id="examples">Examples</h2>
+        <p>Three projects, each showing one thing FlywheelCAD is for. All of them are in the free downloads.</p>
+      </div>
+      <div class="cards">
+        <a class="card" href="/examples/bracket/">
+          <span class="card-media"><img src="/assets/img/examples/bracket-sketch-card.jpg" width="800" height="600" loading="lazy" alt="Bracket sketch with dimensions WIDTH, HEIGHT and SLANT."></span>
+          <h3>Bracket</h3>
+          <p>A sketch driven by four variables, fully constrained. <span class="more">See the code →</span></p>
+        </a>
+        <a class="card" href="/examples/motor-mount/">
+          <span class="card-media"><img src="/assets/img/examples/motor-mount-card.jpg" width="800" height="600" loading="lazy" alt="Motor mount with a stepper, servo, bearing and screws on a plate."></span>
+          <h3>Motor mount</h3>
+          <p>A NEMA&nbsp;17, a servo, a bearing and eight screws from the library, each mated onto an anchor. <span class="more">See the code →</span></p>
+        </a>
+        <a class="card" href="/examples/glider/">
+          <span class="card-media"><img src="/assets/img/examples/glider-card.jpg" width="800" height="600" loading="lazy" alt="Glider with long tapered wings and a T-tail."></span>
+          <h3>Glider</h3>
+          <p>A NACA wing function placed twice, one mirrored; a fuselage lofted as one solid. <span class="more">See the code →</span></p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ai">
+    <div class="wrap">
+      <h2 id="ai">No AI inside. Any AI outside.</h2>
+      <p class="lede">FlywheelCAD has no cloud connection and no account. It doesn't need one: every document is ordinary Python, so the coding agent you already use can write and refactor your models.</p>
+      <ul class="checks">
+        <li>The AI Scripting Guide is the whole API in one Markdown file, sized for a context window.</li>
+        <li>Drop it in, describe the part, and let the agent do the hard geometry — gear teeth, airfoil sections, part families.</li>
+        <li>Whatever it writes stays a <code>.py</code> file. Open it, run it, keep going by hand or by prompt.</li>
+      </ul>
+      <div class="cta">
+        <a class="btn btn-primary" href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">Download the AI Scripting Guide</a>
+        <a class="btn btn-soft" href="/ai/">How to use it</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="compare">
+    <div class="wrap-wide">
+      <div class="section-head">
+        <h2 id="compare">Compared to</h2>
+        <p>The rows this workflow is about, and where FlywheelCAD stands on each.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead>
+            <tr><th scope="col"><span class="visually-hidden">Feature</span></th><th scope="col" class="us">FlywheelCAD</th><th scope="col">OpenSCAD</th><th scope="col">CadQuery / build123d</th><th scope="col">Fusion</th><th scope="col">Onshape</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Model is a plain text file an agent edits like code</th><td class="us y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="n">no¹</td><td class="n">no¹</td></tr>
+            <tr><th scope="row">Interactive sketching with constraints</th><td class="us y">yes</td><td class="n">no</td><td class="n">no</td><td class="y">yes</td><td class="y">yes</td></tr>
+            <tr><th scope="row">Assemblies with mates</th><td class="us y">yes</td><td class="n">no</td><td>in code</td><td class="y">yes</td><td class="y">yes</td></tr>
+            <tr><th scope="row">Standard parts with live insert</th><td class="us y">yes</td><td>libraries, code only</td><td>libraries, code only</td><td>McMaster-Carr (online)</td><td class="y">yes</td></tr>
+            <tr><th scope="row">Runs offline, no account</th><td class="us y">yes</td><td class="y">yes</td><td class="y">yes</td><td>account; offline ≤ 2 weeks</td><td class="n">cloud only</td></tr>
+            <tr><th scope="row">STEP export</th><td class="us">no (mesh kernel)</td><td class="n">no</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td></tr>
+            <tr><th scope="row">2D export</th><td class="us">DXF, SVG</td><td>DXF, SVG</td><td>DXF, SVG</td><td>drawings</td><td>drawings</td></tr>
+            <tr><th scope="row">Platform</th><td class="us">macOS 15.6+, Apple silicon</td><td>Windows, macOS, Linux</td><td>Windows, macOS, Linux</td><td>Windows, macOS</td><td>browser, iOS, Android</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote">¹ Fusion and Onshape have MCP servers that let an agent drive the app; the model itself is not a file the agent edits. Fusion and Onshape are far more complete CAD packages — this table is about the workflow, not feature count.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="news">
+    <div class="wrap">
+      <h2 id="news">Latest news</h2>
+      <ul class="news-list">
+        <li>
+          <time datetime="2026-09-14">14 September 2026</time>
+          <h3><a href="/news/flywheelcad-0-35/">FlywheelCAD 0.35</a></h3>
+          <p>glTF export, watertight meshes, and variables accepted in point coordinates, placements and mates.</p>
+        </li>
+      </ul>
+      <p class="note"><a href="/news/">All news</a> · <a href="/news/feed.xml">Atom feed</a></p>
+    </div>
+  </section>
+
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

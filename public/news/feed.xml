@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>FlywheelCAD news</title>
+  <subtitle>Release notes and posts from flywheelcad.com</subtitle>
+  <link href="https://flywheelcad.com/news/feed.xml" rel="self"/>
+  <link href="https://flywheelcad.com/news/"/>
+  <id>https://flywheelcad.com/news/</id>
+  <updated>2026-09-14T09:50:44Z</updated>
+  <author><name>Digital Handstand</name></author>
+
+  <entry>
+    <title>FlywheelCAD 0.35</title>
+    <link href="https://flywheelcad.com/news/flywheelcad-0-35/"/>
+    <id>https://flywheelcad.com/news/flywheelcad-0-35/</id>
+    <published>2026-09-14T09:50:44Z</published>
+    <updated>2026-09-14T09:50:44Z</updated>
+    <summary>glTF export, watertight meshes, and variables accepted in point coordinates, placements and mates.</summary>
+  </entry>
+</feed>

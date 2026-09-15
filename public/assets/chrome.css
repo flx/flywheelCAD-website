@@ -1,0 +1,158 @@
+/* Site chrome: header, footer, manual navigation.
+   Self-contained: it defines its own --fw-* tokens and reads nothing from the
+   host page, so it renders the same on hand-written pages (site.css) and inside
+   the standalone User Manual (its own stylesheet). Selectors are prefixed and
+   set their own font, colour and spacing so host rules on bare elements
+   (a, ul, li, p, header, footer) cannot restyle the chrome. */
+
+:root {
+  --fw-bg: #fbfaf8;
+  --fw-panel: #ffffff;
+  --fw-ink: #16181d;
+  --fw-muted: #5d636e;
+  --fw-line: #e4e2dd;
+  --fw-accent: #1f5f4f;
+  --fw-accent-ink: #ffffff;
+  --fw-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fw-bg: #0e1013;
+    --fw-panel: #161a1f;
+    --fw-ink: #e9eaec;
+    --fw-muted: #9aa1ab;
+    --fw-line: #272c33;
+    --fw-accent: #5fd6b4;
+    --fw-accent-ink: #08110e;
+  }
+}
+:root[data-theme="dark"] {
+  --fw-bg: #0e1013;
+  --fw-panel: #161a1f;
+  --fw-ink: #e9eaec;
+  --fw-muted: #9aa1ab;
+  --fw-line: #272c33;
+  --fw-accent: #5fd6b4;
+  --fw-accent-ink: #08110e;
+}
+
+.fw-skip {
+  position: absolute; left: 12px; top: -48px; z-index: 100;
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--fw-accent); color: var(--fw-accent-ink);
+  font: 600 14px/1.2 var(--fw-sans); text-decoration: none;
+}
+.fw-skip:focus { top: 12px; }
+
+.fw-header, .fw-footer {
+  font: 15px/1.5 var(--fw-sans);
+  color: var(--fw-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.fw-header *, .fw-footer *, .fw-mnav *, .fw-mdrop * { box-sizing: border-box; }
+
+.fw-bar {
+  width: 100%; max-width: 1040px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 10px 24px;
+}
+
+/* ---- Header */
+.fw-header {
+  margin: 0; padding: 18px 0;
+  border-bottom: 1px solid var(--fw-line);
+  background: var(--fw-bg);
+}
+.fw-brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 650; font-size: 17px; letter-spacing: -0.01em;
+  color: var(--fw-ink); text-decoration: none;
+}
+.fw-mark { width: 24px; height: 24px; flex: none; color: var(--fw-accent); }
+.fw-nav {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px;
+  margin: 0; padding: 0;
+}
+.fw-nav a {
+  color: var(--fw-muted); text-decoration: none; font-weight: 520;
+  padding: 4px 0; border-bottom: 2px solid transparent;
+}
+.fw-nav a:hover { color: var(--fw-ink); }
+.fw-nav a[aria-current] { color: var(--fw-ink); border-bottom-color: var(--fw-accent); }
+.fw-nav a.fw-cta {
+  color: var(--fw-accent-ink); background: var(--fw-accent);
+  padding: 6px 14px; border-radius: 8px; border-bottom: 0;
+}
+.fw-nav a.fw-cta:hover { opacity: .88; color: var(--fw-accent-ink); }
+.fw-nav a.fw-cta[aria-current] { box-shadow: 0 0 0 2px var(--fw-bg), 0 0 0 4px var(--fw-accent); }
+
+@media (max-width: 520px) {
+  .fw-bar { padding: 0 16px; }
+  .fw-nav { gap: 4px 14px; font-size: 14.5px; }
+  .fw-nav a.fw-cta { padding: 5px 11px; }
+}
+
+/* ---- Footer */
+.fw-footer {
+  margin: 0; padding: 26px 0 40px;
+  border-top: 1px solid var(--fw-line);
+  background: var(--fw-bg);
+  font-size: 13.5px; color: var(--fw-muted);
+}
+.fw-footer .fw-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+.fw-foot-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; }
+.fw-footer a { color: var(--fw-muted); text-decoration: none; }
+.fw-footer a:hover { color: var(--fw-ink); text-decoration: underline; }
+.fw-foot-note { margin: 0; padding: 0; }
+
+/* ---- Manual navigation: a fixed rail beside the 880px content column on
+   wide screens, a dropdown above the content otherwise. Both are always in
+   the markup; exactly one is displayed. */
+.fw-mnav, .fw-mdrop { font: 14px/1.45 var(--fw-sans); color: var(--fw-ink); }
+.fw-mnav ul, .fw-mdrop ul { list-style: none; margin: 0; padding: 0; }
+.fw-mnav li, .fw-mdrop li { margin: 0; padding: 0; }
+.fw-mnav a, .fw-mdrop a {
+  display: block; padding: 5px 10px; border-radius: 7px;
+  color: var(--fw-muted); text-decoration: none; border-left: 0;
+}
+.fw-mnav a:hover, .fw-mdrop a:hover { color: var(--fw-ink); background: var(--fw-panel); }
+.fw-mnav a[aria-current="page"], .fw-mdrop a[aria-current="page"] {
+  color: var(--fw-ink); font-weight: 600; background: var(--fw-panel);
+  box-shadow: inset 2px 0 0 var(--fw-accent);
+}
+.fw-mnav-title {
+  margin: 0 0 6px; padding: 0 10px;
+  font-size: 12px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--fw-muted);
+}
+.fw-mnav-extra { margin: 14px 0 0; padding: 12px 0 0; border-top: 1px solid var(--fw-line); }
+
+.fw-mnav { display: none; }
+.fw-mdrop {
+  display: block;
+  width: calc(100% - 32px); max-width: 880px; margin: 16px auto 0;
+  border: 1px solid var(--fw-line); border-radius: 10px; background: var(--fw-panel);
+}
+.fw-mdrop summary {
+  cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none;
+  color: var(--fw-ink);
+}
+.fw-mdrop summary::-webkit-details-marker { display: none; }
+.fw-mdrop summary::after { content: "▾"; float: right; color: var(--fw-muted); }
+.fw-mdrop[open] summary::after { content: "▴"; }
+.fw-mdrop ul { padding: 0 6px 8px; }
+
+@media (min-width: 1360px) {
+  .fw-mnav {
+    display: block;
+    position: fixed; top: 96px;
+    left: calc(50% - 440px - 32px - 200px); width: 200px;
+    max-height: calc(100vh - 120px); overflow-y: auto;
+  }
+  .fw-mdrop { display: none; }
+}
+
+@media print {
+  .fw-header nav, .fw-mnav, .fw-mdrop, .fw-footer, .fw-skip { display: none; }
+}

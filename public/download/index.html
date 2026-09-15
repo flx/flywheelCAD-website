@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Download — FlywheelCAD</title>
+<meta name="description" content="Download the FlywheelCAD beta for macOS on Apple silicon: notarized disk image, requirements, what the beta does, known limits, and the sample and guide downloads.">
+<link rel="canonical" href="https://flywheelcad.com/download/">
+<!-- chrome:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/chrome.css">
+<link rel="alternate" type="application/atom+xml" title="FlywheelCAD news" href="/news/feed.xml">
+<script defer src="/assets/site.js"></script>
+<!-- /chrome:head -->
+</head>
+<body>
+<!-- chrome:header -->
+<a class="fw-skip" href="#main">Skip to content</a>
+<header class="fw-header">
+  <div class="fw-bar">
+    <a class="fw-brand" href="/">
+      <svg class="fw-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/>
+        <path d="M12 3.2v6.2M12 14.4v6.4M3.2 12h6.2M14.4 12h6.4"/>
+      </svg>
+      FlywheelCAD
+    </a>
+    <nav class="fw-nav" aria-label="Site">
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/ai/">AI</a>
+      <a href="/news/">News</a>
+      <a class="fw-cta" href="/download/" aria-current="page">Download</a>
+    </nav>
+  </div>
+</header>
+<!-- /chrome:header -->
+<main id="main">
+  <div class="wrap page-head">
+    <h1>Download FlywheelCAD</h1>
+    <p class="lede">The current beta is <strong>FlywheelCAD <!-- chrome:version -->0.35<!-- /chrome:version --></strong>. It is free during the beta.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/flx/flywheelcad-releases/releases/latest/download/FlywheelCAD.dmg">Download the beta (.dmg)</a>
+      <a class="btn btn-soft" href="https://github.com/flx/flywheelcad-releases/releases">All releases and checksums</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section-tight" aria-labelledby="req">
+      <h2 id="req">Requirements</h2>
+      <dl class="facts">
+        <dt>System</dt><dd>macOS 15.6 or later, on Apple silicon (M1 or newer)</dd>
+        <dt>Download</dt><dd>About 30 MB. Signed and notarized by Apple, so it opens without a Gatekeeper warning.</dd>
+        <dt>Python</dt><dd>Bundled. No system Python or packages to install.</dd>
+        <dt>Network</dt><dd>None. No account, no telemetry, no update check. Your documents stay on your disk.</dd>
+      </dl>
+      <p class="note">The download button always points at the newest release. Each release on GitHub lists its SHA-256.</p>
+    </section>
+
+    <section class="section-tight" aria-labelledby="beta">
+      <h2 id="beta">What the beta does</h2>
+      <ul class="checks">
+        <li><strong>Sketch and constrain</strong> — points, lines, arcs, circles, ellipses and splines, with geometric constraints, dimensions and shared variables. A badge shows when a sketch is fully constrained and which constraints conflict.</li>
+        <li><strong>Build bodies</strong> — extrude, revolve, multi-section loft and sweep; booleans with an optional smooth or chamfered seam; edge rounding, draft and twist.</li>
+        <li><strong>Compose assemblies</strong> — define a part once, instance it, and mate instances onto named anchor points.</li>
+        <li><strong>Standard parts library</strong> — NEMA steppers, hobby servos, metric fasteners, bearings, gears, T-slot extrusion and more, inserted with a live preview.</li>
+        <li><strong>Export</strong> — bodies to 3MF, STL, OBJ and glTF (.glb, .gltf), with per-body colours and finishes where the format carries them; sketches to DXF and SVG.</li>
+        <li><strong>Bring your own AI</strong> — every document is ordinary Python, so any coding agent can write and refactor your models. See the <a href="/ai/">AI page</a>.</li>
+      </ul>
+    </section>
+
+    <section class="section-tight" aria-labelledby="limits">
+      <h2 id="limits">Known limits</h2>
+      <ul>
+        <li>No STEP export. FlywheelCAD builds meshes from signed distance fields — the same class of kernel as OpenSCAD — not boundary representations.</li>
+        <li>No 2D drawing sheets. Sketches export as DXF and SVG.</li>
+        <li>macOS on Apple silicon only.</li>
+        <li>It is a beta: report problems on <a href="https://github.com/flx/flywheelcad-releases/issues">GitHub</a>.</li>
+      </ul>
+    </section>
+
+    <section class="section-tight" aria-labelledby="more">
+      <h2 id="more">Also download</h2>
+      <ul class="files">
+        <li><span><a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md"><strong>AI Scripting Guide</strong></a> — the whole API in one Markdown file, for coding agents.</span><span class="size">135 KB</span></li>
+        <li><span><a href="/downloads/FlywheelCAD-Samples.zip"><strong>Sample Assemblies</strong></a> — ten multi-file projects, from a toy airplane to an axial-flux motor.</span><span class="size">270 KB</span></li>
+        <li><span><a href="/downloads/FlywheelCAD-Showcase.zip"><strong>Showcase Projects</strong></a> — five short, commented projects, one concept each.</span><span class="size">16 KB</span></li>
+      </ul>
+    </section>
+  </div>
+</main>
+<!-- chrome:footer -->
+<footer class="fw-footer">
+  <div class="fw-bar">
+    <nav class="fw-foot-links" aria-label="Footer">
+      <a href="/download/">Download</a>
+      <a href="/examples/">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="/downloads/FlywheelCAD-AI-Scripting-Guide.md">AI guide</a>
+      <a href="/news/">News</a>
+      <a href="https://github.com/flx/flywheelcad-releases/releases">GitHub releases</a>
+      <a href="https://github.com/flx/flywheelcad-releases/issues">Feedback</a>
+      <a href="https://digitalhandstand.com/">Digital Handstand</a>
+    </nav>
+    <p class="fw-foot-note">FlywheelCAD beta <!-- chrome:version -->0.35<!-- /chrome:version --> · macOS on Apple silicon · No cloud, no account. A <a href="https://digitalhandstand.com/">Digital Handstand</a> app.</p>
+  </div>
+</footer>
+<!-- /chrome:footer -->
+</body>
+</html>

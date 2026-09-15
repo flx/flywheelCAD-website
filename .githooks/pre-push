@@ -1,0 +1,13 @@
+#!/bin/sh
+# Refuse to push main (which deploys flywheelcad.com) unless every page is
+# stamped, well-formed, and every internal link and anchor resolves.
+# Enable once per clone:  git config core.hooksPath .githooks
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    python3 scripts/chrome.py --check --links || {
+      echo "pre-push: fix the problems above before pushing main (it deploys production)." >&2
+      exit 1
+    }
+  fi
+done
+exit 0
